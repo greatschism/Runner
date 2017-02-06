@@ -1,0 +1,19 @@
+Calculation for Burned Calories while running:
+
+source: http://www.calories-calculator.net/Calculator_Formulars.html
+
+source for heart rate: http://www.runnersworld.com/sweat-science/tracking-fitness-with-the-heart-rate-running-speed-index
+
+                // calories calculation
+                let isMan = true
+                var calories = 0
+                let age = Double(49)
+                let weight = Double(70)
+                let heartRate = Double(140)
+                let totalMinutes = Double(self.duration) / 60.0
+                if isMan {
+                    calories = Int(((age * 0.2017) + (weight * 0.1988) + (heartRate * 0.6309) - 55.0969) * totalMinutes / 4.184)
+                }
+                else {
+                    calories = Int(((age * 0.074) + (weight * 0.1263) + (heartRate * 0.4472) - 20.4022) * totalMinutes / 4.184)
+                }
