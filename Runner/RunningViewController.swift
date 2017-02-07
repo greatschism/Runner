@@ -9,6 +9,7 @@
 import UIKit
 import CoreLocation
 import HealthKit
+import Charts
 
 class RunningViewController: UIViewController {
 
@@ -30,6 +31,13 @@ class RunningViewController: UIViewController {
     
     // total distance considering all distance in paused mode (this is the one displayed on screen)
     var totalRunningDistance = 0
+    
+    // pace value as a Double
+    var roundPaceValue = 0.0
+    
+    // for building the pace graph
+    var lastRanKM = 0
+    var pacesBySegment = [Int]() // each item is the pace value for each segment of 1 km run
     
     var timer: Timer?
     lazy var locations = [CLLocation]()
@@ -200,9 +208,36 @@ class RunningViewController: UIViewController {
         return view
     }()
     
-    let graphView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.blue
+    let graphView: BarChartView = {
+        let view = BarChartView()
+
+        // hide grid lines
+        view.leftAxis.drawGridLinesEnabled = false
+        view.rightAxis.drawGridLinesEnabled = false
+        view.xAxis.drawGridLinesEnabled = false
+        
+        // hide axis lines
+        view.xAxis.drawAxisLineEnabled = false
+        view.leftAxis.drawAxisLineEnabled = false
+        view.rightAxis.drawAxisLineEnabled = false
+        
+        // hide labels on axis
+        view.xAxis.drawLabelsEnabled = false
+        view.leftAxis.drawLabelsEnabled = false
+        view.rightAxis.drawLabelsEnabled = false
+
+        // set left axis minimun value to Zero (not dynamically)
+        view.leftAxis.axisMinimum = 0
+        
+        // set no data text placeholder
+        view.noDataText = "Chart will display here after 1 km"
+        view.noDataFont = UIFont(name: "AvenirNext-Regular", size: 14)
+        view.noDataTextColor = UIColor(r: 0, g: 128, b: 255)
+        
+        // hide main descriptions
+        view.legend.enabled = false
+        view.chartDescription?.enabled = false
+        
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -518,8 +553,8 @@ class RunningViewController: UIViewController {
                 
                 // Pace in 'min/km'
                 let paceValue = (Double(self.duration) / Double(self.totalRunningDistance)) * (1000.0 / 60.0)
-                let roundPaceValue = Double(paceValue).roundTo(places: 2)
-                let roundPaceString = "\(roundPaceValue)"
+                self.roundPaceValue = Double(paceValue).roundTo(places: 2)
+                let roundPaceString = "\(self.roundPaceValue)"
                 let paceComponents = roundPaceString.components(separatedBy: ".")
                 
                 guard paceComponents.count == 2 else { return }
@@ -558,8 +593,37 @@ class RunningViewController: UIViewController {
                 self.calLabel.text = "\(calString)"
                 
                 //                print("distance = \(self.distance), kmInt = \(kmInt) dmInt = \(dmInt), totalDistInPause = \(self.totalDistanceInPause), pace = \(paceMinutesPart):\(paceSecondsPart)")
+                
+                // Build the pace graph. Add a pace bar every kilometer of run
+                if kmInt != self.lastRanKM {
+                    
+                    if self.pacesBySegment.count == 0 {
+                        
+                        self.pacesBySegment.append(self.duration)   // duration of first segment (km)
+                    }
+                    else {
+                        self.pacesBySegment.append(self.duration - self.pacesBySegment.reduce(0, +))    // grab the duration for the last segment (km)
+                    }
+                    
+                    // display the graph
+                    self.updateChartWithData()
+                    
+                    self.lastRanKM = kmInt
+                }
             }
         }
+    }
+    
+    // bar chart for pace of each segment
+    func updateChartWithData() {
+        var dataEntries = [BarChartDataEntry]()
+        for i in 0..<self.pacesBySegment.count {
+            let dataEntry = BarChartDataEntry(x: Double(i), y: Double(self.pacesBySegment[i]))
+            dataEntries.append(dataEntry)
+        }
+        let chartDataSet = BarChartDataSet(values: dataEntries, label: "Avg pace by segment")
+        let chartData = BarChartData(dataSet: chartDataSet)
+        self.graphView.data = chartData
     }
     
     // TODO: add finish running button to UI
