@@ -632,6 +632,17 @@ class RunningViewController: UIViewController, ChartViewDelegate {
         let valueFormatter = ChartValueFormatter()
         chartData.setValueFormatter(valueFormatter)
         
+        // setup font for values. Show values only if ran 10 km or less (to avoid clashing value strings)
+        if self.pacesBySegment.count <= 10 {
+            
+            chartData.setValueFont(UIFont(name: "AvenirNext-Regular", size: 11))
+            chartData.setValueTextColor(UIColor(r: 32, g: 32, b: 32))
+        }
+        else {
+            
+            chartData.setDrawValues(false)
+        }
+        
         if self.pacesBySegment.count == 1 {
             
             chartData.barWidth = chartData.barWidth / 2
