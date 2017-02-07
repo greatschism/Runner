@@ -11,7 +11,7 @@ import CoreLocation
 import HealthKit
 import Charts
 
-class RunningViewController: UIViewController {
+class RunningViewController: UIViewController, ChartViewDelegate {
 
     var duration = 0
     var distance = 0
@@ -208,9 +208,11 @@ class RunningViewController: UIViewController {
         return view
     }()
     
-    let graphView: BarChartView = {
+    lazy var graphView: BarChartView = {
         let view = BarChartView()
 
+        view.delegate = self
+        
         // hide grid lines
         view.leftAxis.drawGridLinesEnabled = false
         view.rightAxis.drawGridLinesEnabled = false
@@ -226,14 +228,14 @@ class RunningViewController: UIViewController {
         view.leftAxis.drawLabelsEnabled = false
         view.rightAxis.drawLabelsEnabled = false
 
-        // set left axis minimun value to Zero (not dynamically)
+        // set left axis minimun value to Zero (to be static)
         view.leftAxis.axisMinimum = 0
         
         // Number formatting for YAxis
 //        view.leftAxis.valueFormatter = YAxisValueFormatter()
         
         // set no data text placeholder
-        view.noDataText = "Run your first km to display splits"
+        view.noDataText = "Run your first km to display splits data"
         view.noDataFont = UIFont(name: "AvenirNext-Regular", size: 14)
         view.noDataTextColor = UIColor(r: 0, g: 128, b: 255)
         
@@ -288,7 +290,7 @@ class RunningViewController: UIViewController {
         mainView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         mainView.topAnchor.constraint(equalTo: view.topAnchor, constant: UIApplication.shared.statusBarFrame.height + 10).isActive = true
         mainView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -24).isActive = true
-        mainView.bottomAnchor.constraint(equalTo: startPauseButton.topAnchor, constant: -12).isActive = true
+        mainView.bottomAnchor.constraint(equalTo: startPauseButton.topAnchor).isActive = true
         
         mainView.addSubview(durationView)
         mainView.addSubview(durationSeparatorView)
@@ -471,9 +473,9 @@ class RunningViewController: UIViewController {
     func setupGraphView() {
         // x, y, width, height constraints
         graphView.centerXAnchor.constraint(equalTo: mainView.centerXAnchor).isActive = true
-        graphView.topAnchor.constraint(equalTo: calView.bottomAnchor).isActive = true
+        graphView.topAnchor.constraint(equalTo: calView.bottomAnchor, constant: 10).isActive = true
         graphView.widthAnchor.constraint(equalTo: mainView.widthAnchor).isActive = true
-        graphView.heightAnchor.constraint(equalTo: mainView.heightAnchor, multiplier: 1/5).isActive = true
+        graphView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor).isActive = true
     }
     
     // TODO: add a graph bar (look for a cool component/pod) as a subview of graphView
@@ -630,7 +632,15 @@ class RunningViewController: UIViewController {
         let valueFormatter = ChartValueFormatter()
         chartData.setValueFormatter(valueFormatter)
         
+        if self.pacesBySegment.count == 1 {
+            
+            chartData.barWidth = chartData.barWidth / 2
+        }
+        
         self.graphView.data = chartData
+        
+        // animate bars
+        self.graphView.animate(yAxisDuration: 1.0, easingOption: .easeInOutExpo)
     }
     
     // TODO: add finish running button to UI
