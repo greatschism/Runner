@@ -7,7 +7,14 @@
 //
 
 import UIKit
+import Charts
 
-class YAxisValueFormatter: NSObject {
-
+class YAxisValueFormatter: NSObject, IAxisValueFormatter {
+    
+    public func stringForValue(_ value: Double, axis: AxisBase?) -> String {
+        
+        let minutes = String(format: "%02d", Int(value) / 60 % 60)
+        let seconds = String(format: "%02d", Int(value) % 60)
+        return "\(minutes):\(seconds)"
+    }
 }

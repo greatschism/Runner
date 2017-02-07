@@ -13,6 +13,8 @@
 		D031244C1E3EF11000C82B52 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D031244A1E3EF11000C82B52 /* Main.storyboard */; };
 		D031244E1E3EF11000C82B52 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D031244D1E3EF11000C82B52 /* Assets.xcassets */; };
 		D03124511E3EF11000C82B52 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D031244F1E3EF11000C82B52 /* LaunchScreen.storyboard */; };
+		D05780431E49C3CB00A69A23 /* YAxisValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05780421E49C3CB00A69A23 /* YAxisValueFormatter.swift */; };
+		D05780451E49CA7400A69A23 /* ChartValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05780441E49CA7400A69A23 /* ChartValueFormatter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +27,8 @@
 		D031244D1E3EF11000C82B52 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D03124501E3EF11000C82B52 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D03124521E3EF11000C82B52 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D05780421E49C3CB00A69A23 /* YAxisValueFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = YAxisValueFormatter.swift; path = Runner/YAxisValueFormatter.swift; sourceTree = SOURCE_ROOT; };
+		D05780441E49CA7400A69A23 /* ChartValueFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartValueFormatter.swift; sourceTree = "<group>"; };
 		E933CD6662C82A4C228703E0 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -141,6 +145,8 @@
 			isa = PBXGroup;
 			children = (
 				D03124521E3EF11000C82B52 /* Info.plist */,
+				D05780421E49C3CB00A69A23 /* YAxisValueFormatter.swift */,
+				D05780441E49CA7400A69A23 /* ChartValueFormatter.swift */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -274,8 +280,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D05780431E49C3CB00A69A23 /* YAxisValueFormatter.swift in Sources */,
 				D03124491E3EF11000C82B52 /* RunningViewController.swift in Sources */,
 				D03124471E3EF11000C82B52 /* AppDelegate.swift in Sources */,
+				D05780451E49CA7400A69A23 /* ChartValueFormatter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

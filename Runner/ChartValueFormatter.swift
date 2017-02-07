@@ -9,7 +9,7 @@
 import UIKit
 import Charts
 
-class MyChartValueFormatter: NSObject, IValueFormatter {
+class ChartValueFormatter: NSObject, IValueFormatter {
 
     func stringForValue(_ value: Double, entry: ChartDataEntry, dataSetIndex: Int, viewPortHandler: ViewPortHandler?) -> String {
             

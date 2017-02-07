@@ -229,8 +229,11 @@ class RunningViewController: UIViewController {
         // set left axis minimun value to Zero (not dynamically)
         view.leftAxis.axisMinimum = 0
         
+        // Number formatting for YAxis
+//        view.leftAxis.valueFormatter = YAxisValueFormatter()
+        
         // set no data text placeholder
-        view.noDataText = "Chart will display here after 1 km"
+        view.noDataText = "Run your first km to display splits"
         view.noDataFont = UIFont(name: "AvenirNext-Regular", size: 14)
         view.noDataTextColor = UIColor(r: 0, g: 128, b: 255)
         
@@ -623,6 +626,10 @@ class RunningViewController: UIViewController {
         }
         let chartDataSet = BarChartDataSet(values: dataEntries, label: "Avg pace by segment")
         let chartData = BarChartData(dataSet: chartDataSet)
+        
+        let valueFormatter = ChartValueFormatter()
+        chartData.setValueFormatter(valueFormatter)
+        
         self.graphView.data = chartData
     }
     
