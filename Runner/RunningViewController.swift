@@ -267,8 +267,10 @@ class RunningViewController: UIViewController, ChartViewDelegate {
     lazy var finishRunButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Finish", for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitleColor(UIColor.red, for: .normal)
+        button.tintColor = UIColor(r: 0, g: 128, b: 255)
+        button.setImage(UIImage(named:"FinishRunButton"), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
         button.isHidden = true
         button.addTarget(self, action: #selector(finishRunButtonPressed), for: .touchUpInside)
@@ -285,8 +287,8 @@ class RunningViewController: UIViewController, ChartViewDelegate {
         view.backgroundColor = UIColor.white
         
         view.addSubview(mainView)
-        view.addSubview(resumePauseButton)
         view.addSubview(finishRunButton)
+        view.addSubview(resumePauseButton)
         
         setupMainView()
         setupStartPauseButton()
@@ -532,8 +534,8 @@ class RunningViewController: UIViewController, ChartViewDelegate {
             resumePauseButton.setImage(UIImage(named:"ResumeButton"), for: .normal)
             resumePauseButton.tintColor = UIColor(r: 0, g: 128, b: 255)
             
-            resumePauseButtonHorizontalConstraint.constant = -50
-            finishButtonHorizontalConstraint.constant = 50
+            resumePauseButtonHorizontalConstraint.constant = -45
+            finishButtonHorizontalConstraint.constant = 45
             
             UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
                 
@@ -556,7 +558,7 @@ class RunningViewController: UIViewController, ChartViewDelegate {
             finishButtonHorizontalConstraint.constant = 0
             
             if duration > 0 {
-                
+            
                 UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
 
                     self.view.layoutIfNeeded()
@@ -565,8 +567,8 @@ class RunningViewController: UIViewController, ChartViewDelegate {
                     
                     self.finishRunButton.isHidden = true
                 })
-                
             }
+            
             startLocationUpdates()
             locations.removeAll(keepingCapacity: false)
             
