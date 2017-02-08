@@ -507,7 +507,6 @@ class RunningViewController: UIViewController, ChartViewDelegate {
             stopLocationUpdates()
             isPaused = true
             distanceWhenPaused = distance
-            
         }
         else {
             
@@ -515,107 +514,110 @@ class RunningViewController: UIViewController, ChartViewDelegate {
             startLocationUpdates()
             locations.removeAll(keepingCapacity: false)
             
-            timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(eachSecond), userInfo: nil, repeats: true)
+        }
+    }
+    
+    // Called every second during a run
+    func eachSecond() {
+        
+        // calculate distance when resuming from pause mode (needs that to substract it from total distance)
+        if self.isPaused == true {
+            
+            self.totalDistanceInPause = self.totalDistanceInPause + (self.distance - self.distanceWhenPaused)
+            self.isPaused = false
+        }
+        
+        // time calculation
+        self.duration = self.duration + 1
+        let hours = String(format: "%02d", self.duration / 3600)
+        let minutes = String(format: "%02d", self.duration / 60 % 60)
+        let seconds = String(format: "%02d", self.duration % 60)
+        
+        // assing duration label
+        self.durationLabel.text = "\(hours):\(minutes):\(seconds)"
+        
+        // running distance taking into account total distance in pause mode
+        self.totalRunningDistance = self.distance - self.totalDistanceInPause
+        
+        let kmInt = self.totalRunningDistance / 1000 % 1000
+        
+        let dmTemp = Double(self.totalRunningDistance) / 1000
+        // let dmInt = Int(Double(dmTemp).roundTo(places: 2) * 100) % 100
+        let dmInt = Int((Double(dmTemp) * 100)) % 100
+        
+        let km: String
+        
+        if kmInt < 10 {
+            km = String(format: "%01d", kmInt)
+        }
+        else {
+            km = String(format: "%02d", kmInt)
+        }
+        
+        let dm = String(format: "%02d", dmInt)
+        
+        // assign distance label
+        self.distanceLabel.text = "\(km).\(dm)"
+        
+        // Pace in 'min/km'
+        let paceValue = (Double(self.duration) / Double(self.totalRunningDistance)) * (1000.0 / 60.0)
+        self.roundPaceValue = Double(paceValue).roundTo(places: 2)
+        let roundPaceString = "\(self.roundPaceValue)"
+        let paceComponents = roundPaceString.components(separatedBy: ".")
+        
+        guard paceComponents.count == 2 else { return }
+        
+        let paceMinutesPart = paceComponents[0]
+        var paceSecondsPart = paceComponents[1]
+        
+        if paceSecondsPart.characters.count == 1 {
+            
+            paceSecondsPart = paceSecondsPart.appending("0")
+        }
+        
+        guard let paceSecondsPartInt = Int(paceSecondsPart) else { return }
+        
+        let paceSecondsPartResult = paceSecondsPartInt * 60 / 100
+        paceSecondsPart = String(format: "%02d", paceSecondsPartResult)
+        
+        // assign pace label
+        self.avgPaceLabel.text = "\(paceMinutesPart):\(paceSecondsPart)"
+        
+        // calories calculation
+        let speed = Double(self.distance) / Double(self.duration)   // speed in 'm/s'
+        self.heartRate = self.heartRateFor(speed)                   // average for man around 30 years old
+        
+        let totalMinutes = Double(self.duration) / 60.0
+        if self.isMan {
+            self.calories = Int(((self.age * 0.2017) + (self.weight * 0.1988) + (self.heartRate * 0.6309) - 55.0969) * totalMinutes / 4.184)
+        }
+        else {
+            self.calories = Int(((self.age * 0.074) + (self.weight * 0.1263) + (self.heartRate * 0.4472) - 20.4022) * totalMinutes / 4.184)
+        }
+        
+        let calString = String(format: "%03d", self.calories)
+        
+        // asign calories label
+        self.calLabel.text = "\(calString)"
+        
+        //                print("distance = \(self.distance), kmInt = \(kmInt) dmInt = \(dmInt), totalDistInPause = \(self.totalDistanceInPause), pace = \(paceMinutesPart):\(paceSecondsPart)")
+        
+        // Build the pace graph. Add a pace bar every kilometer of run
+        if kmInt != self.lastRanKM {
+            
+            if self.pacesBySegment.count == 0 {
                 
-                // calculate distance when resuming from pause mode (needs that to substract it from total distance)
-                if self.isPaused == true {
-                    
-                    self.totalDistanceInPause = self.totalDistanceInPause + (self.distance - self.distanceWhenPaused)
-                    self.isPaused = false
-                }
-                
-                // time calculation
-                self.duration = self.duration + 1
-                let hours = String(format: "%02d", self.duration / 3600)
-                let minutes = String(format: "%02d", self.duration / 60 % 60)
-                let seconds = String(format: "%02d", self.duration % 60)
-                
-                // assing duration label
-                self.durationLabel.text = "\(hours):\(minutes):\(seconds)"
-                
-                // running distance taking into account total distance in pause mode
-                self.totalRunningDistance = self.distance - self.totalDistanceInPause
-                
-                let kmInt = self.totalRunningDistance / 1000 % 1000
-                
-                let dmTemp = Double(self.totalRunningDistance) / 1000
-                // let dmInt = Int(Double(dmTemp).roundTo(places: 2) * 100) % 100
-                let dmInt = Int((Double(dmTemp) * 100)) % 100
-                
-                let km: String
-                
-                if kmInt < 10 {
-                    km = String(format: "%01d", kmInt)
-                }
-                else {
-                    km = String(format: "%02d", kmInt)
-                }
-                
-                let dm = String(format: "%02d", dmInt)
-                
-                // assign distance label
-                self.distanceLabel.text = "\(km).\(dm)"
-                
-                // Pace in 'min/km'
-                let paceValue = (Double(self.duration) / Double(self.totalRunningDistance)) * (1000.0 / 60.0)
-                self.roundPaceValue = Double(paceValue).roundTo(places: 2)
-                let roundPaceString = "\(self.roundPaceValue)"
-                let paceComponents = roundPaceString.components(separatedBy: ".")
-                
-                guard paceComponents.count == 2 else { return }
-                
-                let paceMinutesPart = paceComponents[0]
-                var paceSecondsPart = paceComponents[1]
-                
-                if paceSecondsPart.characters.count == 1 {
-                    
-                    paceSecondsPart = paceSecondsPart.appending("0")
-                }
-                
-                guard let paceSecondsPartInt = Int(paceSecondsPart) else { return }
-                
-                let paceSecondsPartResult = paceSecondsPartInt * 60 / 100
-                paceSecondsPart = String(format: "%02d", paceSecondsPartResult)
-                
-                // assign pace label
-                self.avgPaceLabel.text = "\(paceMinutesPart):\(paceSecondsPart)"
-                
-                // calories calculation
-                let speed = Double(self.distance) / Double(self.duration)   // speed in 'm/s'
-                self.heartRate = self.heartRateFor(speed)                   // average for man around 30 years old
-                
-                let totalMinutes = Double(self.duration) / 60.0
-                if self.isMan {
-                    self.calories = Int(((self.age * 0.2017) + (self.weight * 0.1988) + (self.heartRate * 0.6309) - 55.0969) * totalMinutes / 4.184)
-                }
-                else {
-                    self.calories = Int(((self.age * 0.074) + (self.weight * 0.1263) + (self.heartRate * 0.4472) - 20.4022) * totalMinutes / 4.184)
-                }
-                
-                let calString = String(format: "%03d", self.calories)
-                
-                // asign calories label
-                self.calLabel.text = "\(calString)"
-                
-                //                print("distance = \(self.distance), kmInt = \(kmInt) dmInt = \(dmInt), totalDistInPause = \(self.totalDistanceInPause), pace = \(paceMinutesPart):\(paceSecondsPart)")
-                
-                // Build the pace graph. Add a pace bar every kilometer of run
-                if kmInt != self.lastRanKM {
-                    
-                    if self.pacesBySegment.count == 0 {
-                        
-                        self.pacesBySegment.append(self.duration)   // duration of first segment (km)
-                    }
-                    else {
-                        self.pacesBySegment.append(self.duration - self.pacesBySegment.reduce(0, +))    // grab the duration for the last segment (km)
-                    }
-                    
-                    // display the graph
-                    self.updateChartWithData()
-                    
-                    self.lastRanKM = kmInt
-                }
+                self.pacesBySegment.append(self.duration)   // duration of first segment (km)
             }
+            else {
+                self.pacesBySegment.append(self.duration - self.pacesBySegment.reduce(0, +))    // grab the duration for the last segment (km)
+            }
+            
+            // display the graph
+            self.updateChartWithData()
+            
+            self.lastRanKM = kmInt
         }
     }
     
@@ -655,7 +657,7 @@ class RunningViewController: UIViewController, ChartViewDelegate {
     }
     
     // TODO: add finish running button to UI
-    func finishRunning() {
+    func finishRunButtonPressed() {
         
         //        if timer != nil {
         //            startPauseButton.setTitle("START", for: .normal)
