@@ -12,7 +12,7 @@ import HealthKit
 import Charts
 
 class RunningViewController: UIViewController, ChartViewDelegate {
-
+    
     var duration = 0
     var distance = 0
     
@@ -247,20 +247,36 @@ class RunningViewController: UIViewController, ChartViewDelegate {
         return view
     }()
     
-    lazy var startPauseButton: UIButton = {
+    lazy var resumePauseButton: UIButton = {
         let button = UIButton(type: .system)
-        button.backgroundColor = UIColor.white
         button.setTitle("START", for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitleColor(UIColor.red, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 24)
-        button.layer.cornerRadius = 50
-        button.layer.masksToBounds = true
+        button.backgroundColor = UIColor.white
+//        button.layer.cornerRadius = 50
+//        button.layer.masksToBounds = true
         
         button.addTarget(self, action: #selector(startPauseButtonPressed), for: .touchUpInside)
         
         return button
     }()
+    
+    var resumePauseButtonHorizontalConstraint = NSLayoutConstraint() // need property for animation
+
+    lazy var finishRunButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Finish", for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitleColor(UIColor.red, for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
+        button.isHidden = true
+        button.addTarget(self, action: #selector(finishRunButtonPressed), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    var finishButtonHorizontalConstraint = NSLayoutConstraint() // need property for animation
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -269,10 +285,12 @@ class RunningViewController: UIViewController, ChartViewDelegate {
         view.backgroundColor = UIColor.white
         
         view.addSubview(mainView)
-        view.addSubview(startPauseButton)
+        view.addSubview(resumePauseButton)
+        view.addSubview(finishRunButton)
         
         setupMainView()
         setupStartPauseButton()
+        setupFinishRunButton()
     }
     
 //    override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -290,7 +308,7 @@ class RunningViewController: UIViewController, ChartViewDelegate {
         mainView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         mainView.topAnchor.constraint(equalTo: view.topAnchor, constant: UIApplication.shared.statusBarFrame.height + 10).isActive = true
         mainView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -24).isActive = true
-        mainView.bottomAnchor.constraint(equalTo: startPauseButton.topAnchor).isActive = true
+        mainView.bottomAnchor.constraint(equalTo: resumePauseButton.topAnchor, constant: -10).isActive = true
         
         mainView.addSubview(durationView)
         mainView.addSubview(durationSeparatorView)
@@ -478,14 +496,24 @@ class RunningViewController: UIViewController, ChartViewDelegate {
         graphView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor).isActive = true
     }
     
-    // TODO: add a graph bar (look for a cool component/pod) as a subview of graphView
-    
     func setupStartPauseButton() {
         // x, y, width, height constraints
-        startPauseButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        startPauseButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -12).isActive = true
-        startPauseButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        startPauseButton.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        resumePauseButtonHorizontalConstraint = resumePauseButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        resumePauseButtonHorizontalConstraint.isActive = true
+        
+        resumePauseButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10).isActive = true
+        resumePauseButton.widthAnchor.constraint(equalToConstant: 70).isActive = true
+        resumePauseButton.heightAnchor.constraint(equalToConstant: 70).isActive = true
+    }
+    
+    func setupFinishRunButton() {
+        // x, y, width, height constraints
+        finishButtonHorizontalConstraint = finishRunButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        finishButtonHorizontalConstraint.isActive = true
+        
+        finishRunButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10).isActive = true
+        finishRunButton.widthAnchor.constraint(equalToConstant: 70).isActive = true
+        finishRunButton.heightAnchor.constraint(equalToConstant: 70).isActive = true
     }
     
     // MARK: - Running Updates and Calculations
@@ -501,7 +529,18 @@ class RunningViewController: UIViewController, ChartViewDelegate {
         
         if timer != nil {
             
-            startPauseButton.setTitle("START", for: .normal)
+            resumePauseButton.setImage(UIImage(named:"ResumeButton"), for: .normal)
+            resumePauseButton.tintColor = UIColor(r: 0, g: 128, b: 255)
+            
+            resumePauseButtonHorizontalConstraint.constant = -50
+            finishButtonHorizontalConstraint.constant = 50
+            
+            UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
+                
+                self.finishRunButton.isHidden = false
+                self.view.layoutIfNeeded()
+            })
+            
             timer?.invalidate()
             timer = nil
             stopLocationUpdates()
@@ -510,7 +549,24 @@ class RunningViewController: UIViewController, ChartViewDelegate {
         }
         else {
             
-            startPauseButton.setTitle("PAUSE", for: .normal)
+            resumePauseButton.setImage(UIImage(named:"PauseButton"), for: .normal)
+            resumePauseButton.tintColor = UIColor(r: 0, g: 128, b: 255)
+            
+            resumePauseButtonHorizontalConstraint.constant = 0
+            finishButtonHorizontalConstraint.constant = 0
+            
+            if duration > 0 {
+                
+                UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
+
+                    self.view.layoutIfNeeded()
+
+                }, completion: { _ in
+                    
+                    self.finishRunButton.isHidden = true
+                })
+                
+            }
             startLocationUpdates()
             locations.removeAll(keepingCapacity: false)
             
@@ -658,6 +714,9 @@ class RunningViewController: UIViewController, ChartViewDelegate {
     
     // TODO: add finish running button to UI
     func finishRunButtonPressed() {
+        
+        
+        print("finish button pressed")
         
         //        if timer != nil {
         //            startPauseButton.setTitle("START", for: .normal)
