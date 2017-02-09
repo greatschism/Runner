@@ -13,7 +13,12 @@ import Charts
 
 class RunningViewController: UIViewController, ChartViewDelegate {
     
-    var duration = 0
+    lazy var newRun: Run = {
+        var run = Run(type: RunType.run, time: nil, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [0], calories: 0, image: nil)
+        
+        return run
+    }()
+    
     var distance = 0
     
     // for calulation of calories burned
@@ -22,22 +27,12 @@ class RunningViewController: UIViewController, ChartViewDelegate {
     let weight = Double(70)
     var heartRate = Double(140)
     
-    var calories = 0
-    
     // for calculation of total distance during pause mode
     var isPaused = false
     var distanceWhenPaused = 0
-    var totalDistanceInPause = 0
-    
-    // total distance considering all distance in paused mode (this is the one displayed on screen)
-    var totalRunningDistance = 0
-    
-    // pace value as a Double
-    var roundPaceValue = 0.0
     
     // for building the pace graph
     var lastRanKM = 0
-    var pacesBySegment = [Int]() // each item is the pace value for each segment of 1 km run
     
     var timer: Timer?
     lazy var locations = [CLLocation]()
@@ -53,7 +48,7 @@ class RunningViewController: UIViewController, ChartViewDelegate {
         return _locationManager
     }()
     
-    let mainView: UIView = {
+    lazy var mainContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor.white
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -286,7 +281,7 @@ class RunningViewController: UIViewController, ChartViewDelegate {
         navigationController?.isNavigationBarHidden = true
         view.backgroundColor = UIColor.white
         
-        view.addSubview(mainView)
+        view.addSubview(mainContainerView)
         view.addSubview(finishRunButton)
         view.addSubview(resumePauseButton)
         
@@ -307,20 +302,20 @@ class RunningViewController: UIViewController, ChartViewDelegate {
     
     func setupMainView() {
         // x, y, width, height constraints
-        mainView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        mainView.topAnchor.constraint(equalTo: view.topAnchor, constant: UIApplication.shared.statusBarFrame.height + 10).isActive = true
-        mainView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -24).isActive = true
-        mainView.bottomAnchor.constraint(equalTo: resumePauseButton.topAnchor, constant: -10).isActive = true
+        mainContainerView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        mainContainerView.topAnchor.constraint(equalTo: view.topAnchor, constant: UIApplication.shared.statusBarFrame.height + 10).isActive = true
+        mainContainerView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -24).isActive = true
+        mainContainerView.bottomAnchor.constraint(equalTo: resumePauseButton.topAnchor, constant: -10).isActive = true
         
-        mainView.addSubview(durationView)
-        mainView.addSubview(durationSeparatorView)
-        mainView.addSubview(distanceView)
-        mainView.addSubview(distanceSeparatorView)
-        mainView.addSubview(avgPaceView)
-        mainView.addSubview(avgPaceSeparatorView)
-        mainView.addSubview(calView)
-        mainView.addSubview(calSeparatorView)
-        mainView.addSubview(graphView)
+        mainContainerView.addSubview(durationView)
+        mainContainerView.addSubview(durationSeparatorView)
+        mainContainerView.addSubview(distanceView)
+        mainContainerView.addSubview(distanceSeparatorView)
+        mainContainerView.addSubview(avgPaceView)
+        mainContainerView.addSubview(avgPaceSeparatorView)
+        mainContainerView.addSubview(calView)
+        mainContainerView.addSubview(calSeparatorView)
+        mainContainerView.addSubview(graphView)
         
         // setup sub views of the mainView
         setupDurationView()
@@ -336,10 +331,10 @@ class RunningViewController: UIViewController, ChartViewDelegate {
     
     func setupDurationView() {
         // x, y, width, height constraints
-        durationView.centerXAnchor.constraint(equalTo: mainView.centerXAnchor).isActive = true
-        durationView.topAnchor.constraint(equalTo: mainView.topAnchor).isActive = true
-        durationView.widthAnchor.constraint(equalTo: mainView.widthAnchor).isActive = true
-        durationView.heightAnchor.constraint(equalTo: mainView.heightAnchor, multiplier: 1/5).isActive = true
+        durationView.centerXAnchor.constraint(equalTo: mainContainerView.centerXAnchor).isActive = true
+        durationView.topAnchor.constraint(equalTo: mainContainerView.topAnchor).isActive = true
+        durationView.widthAnchor.constraint(equalTo: mainContainerView.widthAnchor).isActive = true
+        durationView.heightAnchor.constraint(equalTo: mainContainerView.heightAnchor, multiplier: 1/5).isActive = true
         
         durationView.addSubview(durationTitle)
         durationView.addSubview(durationLabel)
@@ -365,20 +360,20 @@ class RunningViewController: UIViewController, ChartViewDelegate {
     
     func setupDurationSeparatorView() {
         // x, y, width, height constraints
-        durationSeparatorView.centerXAnchor.constraint(equalTo: mainView.centerXAnchor).isActive = true
+        durationSeparatorView.centerXAnchor.constraint(equalTo: mainContainerView.centerXAnchor).isActive = true
         durationSeparatorView.topAnchor.constraint(equalTo: durationView.bottomAnchor).isActive = true
-        durationSeparatorView.widthAnchor.constraint(equalTo: mainView.widthAnchor, constant: -24).isActive = true
+        durationSeparatorView.widthAnchor.constraint(equalTo: mainContainerView.widthAnchor, constant: -24).isActive = true
         durationSeparatorView.heightAnchor.constraint(equalToConstant: 0.5).isActive = true
         
-        mainView.bringSubview(toFront: durationSeparatorView)
+        mainContainerView.bringSubview(toFront: durationSeparatorView)
     }
     
     func setupDistanceView() {
         // x, y, width, height constraints
-        distanceView.centerXAnchor.constraint(equalTo: mainView.centerXAnchor).isActive = true
+        distanceView.centerXAnchor.constraint(equalTo: mainContainerView.centerXAnchor).isActive = true
         distanceView.topAnchor.constraint(equalTo: durationView.bottomAnchor).isActive = true
-        distanceView.widthAnchor.constraint(equalTo: mainView.widthAnchor).isActive = true
-        distanceView.heightAnchor.constraint(equalTo: mainView.heightAnchor, multiplier: 1/5).isActive = true
+        distanceView.widthAnchor.constraint(equalTo: mainContainerView.widthAnchor).isActive = true
+        distanceView.heightAnchor.constraint(equalTo: mainContainerView.heightAnchor, multiplier: 1/5).isActive = true
         
         distanceView.addSubview(distanceTitle)
         distanceView.addSubview(distanceLabel)
@@ -404,20 +399,20 @@ class RunningViewController: UIViewController, ChartViewDelegate {
     
     func setupDistanceSeparatorView() {
         // x, y, width, height constraints
-        distanceSeparatorView.centerXAnchor.constraint(equalTo: mainView.centerXAnchor).isActive = true
+        distanceSeparatorView.centerXAnchor.constraint(equalTo: mainContainerView.centerXAnchor).isActive = true
         distanceSeparatorView.topAnchor.constraint(equalTo: distanceView.bottomAnchor).isActive = true
-        distanceSeparatorView.widthAnchor.constraint(equalTo: mainView.widthAnchor, constant: -24).isActive = true
+        distanceSeparatorView.widthAnchor.constraint(equalTo: mainContainerView.widthAnchor, constant: -24).isActive = true
         distanceSeparatorView.heightAnchor.constraint(equalToConstant: 0.5).isActive = true
         
-        mainView.bringSubview(toFront: distanceSeparatorView)
+        mainContainerView.bringSubview(toFront: distanceSeparatorView)
     }
     
     func setupAvgPaceView() {
         // x, y, width, height constraints
-        avgPaceView.centerXAnchor.constraint(equalTo: mainView.centerXAnchor).isActive = true
+        avgPaceView.centerXAnchor.constraint(equalTo: mainContainerView.centerXAnchor).isActive = true
         avgPaceView.topAnchor.constraint(equalTo: distanceView.bottomAnchor).isActive = true
-        avgPaceView.widthAnchor.constraint(equalTo: mainView.widthAnchor).isActive = true
-        avgPaceView.heightAnchor.constraint(equalTo: mainView.heightAnchor, multiplier: 1/5).isActive = true
+        avgPaceView.widthAnchor.constraint(equalTo: mainContainerView.widthAnchor).isActive = true
+        avgPaceView.heightAnchor.constraint(equalTo: mainContainerView.heightAnchor, multiplier: 1/5).isActive = true
         
         avgPaceView.addSubview(avgPaceTitle)
         avgPaceView.addSubview(avgPaceLabel)
@@ -443,20 +438,20 @@ class RunningViewController: UIViewController, ChartViewDelegate {
     
     func setupAvgPaceSeparatorView() {
         // x, y, width, height constraints
-        avgPaceSeparatorView.centerXAnchor.constraint(equalTo: mainView.centerXAnchor).isActive = true
+        avgPaceSeparatorView.centerXAnchor.constraint(equalTo: mainContainerView.centerXAnchor).isActive = true
         avgPaceSeparatorView.topAnchor.constraint(equalTo: avgPaceView.bottomAnchor).isActive = true
-        avgPaceSeparatorView.widthAnchor.constraint(equalTo: mainView.widthAnchor, constant: -24).isActive = true
+        avgPaceSeparatorView.widthAnchor.constraint(equalTo: mainContainerView.widthAnchor, constant: -24).isActive = true
         avgPaceSeparatorView.heightAnchor.constraint(equalToConstant: 0.5).isActive = true
         
-        mainView.bringSubview(toFront: avgPaceSeparatorView)
+        mainContainerView.bringSubview(toFront: avgPaceSeparatorView)
     }
     
     func setupCalView() {
         // x, y, width, height constraints
-        calView.centerXAnchor.constraint(equalTo: mainView.centerXAnchor).isActive = true
+        calView.centerXAnchor.constraint(equalTo: mainContainerView.centerXAnchor).isActive = true
         calView.topAnchor.constraint(equalTo: avgPaceView.bottomAnchor).isActive = true
-        calView.widthAnchor.constraint(equalTo: mainView.widthAnchor).isActive = true
-        calView.heightAnchor.constraint(equalTo: mainView.heightAnchor, multiplier: 1/5).isActive = true
+        calView.widthAnchor.constraint(equalTo: mainContainerView.widthAnchor).isActive = true
+        calView.heightAnchor.constraint(equalTo: mainContainerView.heightAnchor, multiplier: 1/5).isActive = true
         
         calView.addSubview(calTitle)
         calView.addSubview(calLabel)
@@ -482,20 +477,20 @@ class RunningViewController: UIViewController, ChartViewDelegate {
     
     func setupCalSeparatorView() {
         // x, y, width, height constraints
-        calSeparatorView.centerXAnchor.constraint(equalTo: mainView.centerXAnchor).isActive = true
+        calSeparatorView.centerXAnchor.constraint(equalTo: mainContainerView.centerXAnchor).isActive = true
         calSeparatorView.topAnchor.constraint(equalTo: calView.bottomAnchor).isActive = true
-        calSeparatorView.widthAnchor.constraint(equalTo: mainView.widthAnchor, constant: -24).isActive = true
+        calSeparatorView.widthAnchor.constraint(equalTo: mainContainerView.widthAnchor, constant: -24).isActive = true
         calSeparatorView.heightAnchor.constraint(equalToConstant: 0.5).isActive = true
         
-        mainView.bringSubview(toFront: calSeparatorView)
+        mainContainerView.bringSubview(toFront: calSeparatorView)
     }
     
     func setupGraphView() {
         // x, y, width, height constraints
-        graphView.centerXAnchor.constraint(equalTo: mainView.centerXAnchor).isActive = true
+        graphView.centerXAnchor.constraint(equalTo: mainContainerView.centerXAnchor).isActive = true
         graphView.topAnchor.constraint(equalTo: calView.bottomAnchor, constant: 10).isActive = true
-        graphView.widthAnchor.constraint(equalTo: mainView.widthAnchor).isActive = true
-        graphView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor).isActive = true
+        graphView.widthAnchor.constraint(equalTo: mainContainerView.widthAnchor).isActive = true
+        graphView.bottomAnchor.constraint(equalTo: mainContainerView.bottomAnchor).isActive = true
     }
     
     func setupStartPauseButton() {
@@ -551,13 +546,18 @@ class RunningViewController: UIViewController, ChartViewDelegate {
         }
         else {
             
+            if newRun.time == nil {
+                
+                newRun.time = NSDate()
+            }
+            
             resumePauseButton.setImage(UIImage(named:"PauseButton"), for: .normal)
             resumePauseButton.tintColor = UIColor(r: 0, g: 128, b: 255)
             
             resumePauseButtonHorizontalConstraint.constant = 0
             finishButtonHorizontalConstraint.constant = 0
             
-            if duration > 0 {
+            if newRun.duration > 0 {
             
                 UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
 
@@ -582,25 +582,25 @@ class RunningViewController: UIViewController, ChartViewDelegate {
         // calculate distance when resuming from pause mode (needs that to substract it from total distance)
         if self.isPaused == true {
             
-            self.totalDistanceInPause = self.totalDistanceInPause + (self.distance - self.distanceWhenPaused)
+            newRun.totalDistanceInPause = newRun.totalDistanceInPause + (self.distance - self.distanceWhenPaused)
             self.isPaused = false
         }
         
         // time calculation
-        self.duration = self.duration + 1
-        let hours = String(format: "%02d", self.duration / 3600)
-        let minutes = String(format: "%02d", self.duration / 60 % 60)
-        let seconds = String(format: "%02d", self.duration % 60)
+        newRun.duration = newRun.duration + 1
+        let hours = String(format: "%02d", newRun.duration / 3600)
+        let minutes = String(format: "%02d", newRun.duration / 60 % 60)
+        let seconds = String(format: "%02d", newRun.duration % 60)
         
         // assing duration label
         self.durationLabel.text = "\(hours):\(minutes):\(seconds)"
         
         // running distance taking into account total distance in pause mode
-        self.totalRunningDistance = self.distance - self.totalDistanceInPause
+        newRun.totalRunDistance = self.distance - newRun.totalDistanceInPause
         
-        let kmInt = self.totalRunningDistance / 1000 % 1000
+        let kmInt = newRun.totalRunDistance / 1000 % 1000
         
-        let dmTemp = Double(self.totalRunningDistance) / 1000
+        let dmTemp = Double(newRun.totalRunDistance) / 1000
         // let dmInt = Int(Double(dmTemp).roundTo(places: 2) * 100) % 100
         let dmInt = Int((Double(dmTemp) * 100)) % 100
         
@@ -619,9 +619,9 @@ class RunningViewController: UIViewController, ChartViewDelegate {
         self.distanceLabel.text = "\(km).\(dm)"
         
         // Pace in 'min/km'
-        let paceValue = (Double(self.duration) / Double(self.totalRunningDistance)) * (1000.0 / 60.0)
-        self.roundPaceValue = Double(paceValue).roundTo(places: 2)
-        let roundPaceString = "\(self.roundPaceValue)"
+        let paceValue = (Double(newRun.duration) / Double(newRun.totalRunDistance)) * (1000.0 / 60.0)
+        newRun.pace = Double(paceValue).roundTo(places: 2)
+        let roundPaceString = "\(newRun.pace)"
         let paceComponents = roundPaceString.components(separatedBy: ".")
         
         guard paceComponents.count == 2 else { return }
@@ -643,18 +643,18 @@ class RunningViewController: UIViewController, ChartViewDelegate {
         self.avgPaceLabel.text = "\(paceMinutesPart):\(paceSecondsPart)"
         
         // calories calculation
-        let speed = Double(self.distance) / Double(self.duration)   // speed in 'm/s'
+        let speed = Double(self.distance) / Double(newRun.duration)   // speed in 'm/s'
         self.heartRate = self.heartRateFor(speed)                   // average for man around 30 years old
         
-        let totalMinutes = Double(self.duration) / 60.0
+        let totalMinutes = Double(newRun.duration) / 60.0
         if self.isMan {
-            self.calories = Int(((self.age * 0.2017) + (self.weight * 0.1988) + (self.heartRate * 0.6309) - 55.0969) * totalMinutes / 4.184)
+            newRun.calories = Int(((self.age * 0.2017) + (self.weight * 0.1988) + (self.heartRate * 0.6309) - 55.0969) * totalMinutes / 4.184)
         }
         else {
-            self.calories = Int(((self.age * 0.074) + (self.weight * 0.1263) + (self.heartRate * 0.4472) - 20.4022) * totalMinutes / 4.184)
+            newRun.calories = Int(((self.age * 0.074) + (self.weight * 0.1263) + (self.heartRate * 0.4472) - 20.4022) * totalMinutes / 4.184)
         }
         
-        let calString = String(format: "%03d", self.calories)
+        let calString = String(format: "%03d", newRun.calories)
         
         // asign calories label
         self.calLabel.text = "\(calString)"
@@ -664,12 +664,12 @@ class RunningViewController: UIViewController, ChartViewDelegate {
         // Build the pace graph. Add a pace bar every kilometer of run
         if kmInt != self.lastRanKM {
             
-            if self.pacesBySegment.count == 0 {
+            if newRun.pacesBySegment.count == 0 {
                 
-                self.pacesBySegment.append(self.duration)   // duration of first segment (km)
+                newRun.pacesBySegment.append(newRun.duration)   // duration of first segment (km)
             }
             else {
-                self.pacesBySegment.append(self.duration - self.pacesBySegment.reduce(0, +))    // grab the duration for the last segment (km)
+                newRun.pacesBySegment.append(newRun.duration - newRun.pacesBySegment.reduce(0, +))    // grab the duration for the last segment (km)
             }
             
             // display the graph
@@ -682,8 +682,8 @@ class RunningViewController: UIViewController, ChartViewDelegate {
     // bar chart for pace of each segment
     func updateChartWithData() {
         var dataEntries = [BarChartDataEntry]()
-        for i in 0..<self.pacesBySegment.count {
-            let dataEntry = BarChartDataEntry(x: Double(i), y: Double(self.pacesBySegment[i]))
+        for i in 0..<newRun.pacesBySegment.count {
+            let dataEntry = BarChartDataEntry(x: Double(i), y: Double(newRun.pacesBySegment[i]))
             dataEntries.append(dataEntry)
         }
         let chartDataSet = BarChartDataSet(values: dataEntries, label: "Avg pace by segment")
@@ -693,7 +693,7 @@ class RunningViewController: UIViewController, ChartViewDelegate {
         chartData.setValueFormatter(valueFormatter)
         
         // setup font for values. Show values only if ran 10 km or less (to avoid clashing value strings)
-        if self.pacesBySegment.count <= 10 {
+        if newRun.pacesBySegment.count <= 10 {
             
             chartData.setValueFont(UIFont(name: "AvenirNext-Regular", size: 11))
             chartData.setValueTextColor(UIColor(r: 32, g: 32, b: 32))
@@ -703,7 +703,7 @@ class RunningViewController: UIViewController, ChartViewDelegate {
             chartData.setDrawValues(false)
         }
         
-        if self.pacesBySegment.count == 1 {
+        if newRun.pacesBySegment.count == 1 {
             
             chartData.barWidth = chartData.barWidth / 2
         }
@@ -714,11 +714,13 @@ class RunningViewController: UIViewController, ChartViewDelegate {
         self.graphView.animate(yAxisDuration: 1.0, easingOption: .easeInOutExpo)
     }
     
-    // TODO: add finish running button to UI
     func finishRunButtonPressed() {
         
+        let finishRunViewController = FinishRunViewController()
+        finishRunViewController.newRun = self.newRun
+        let navController = UINavigationController(rootViewController: finishRunViewController)
+        present(navController, animated: true, completion: nil)
         
-        print("finish button pressed")
         
         //        if timer != nil {
         //            startPauseButton.setTitle("START", for: .normal)

@@ -15,6 +15,8 @@
 		D03124511E3EF11000C82B52 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D031244F1E3EF11000C82B52 /* LaunchScreen.storyboard */; };
 		D05780431E49C3CB00A69A23 /* YAxisValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05780421E49C3CB00A69A23 /* YAxisValueFormatter.swift */; };
 		D05780451E49CA7400A69A23 /* ChartValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05780441E49CA7400A69A23 /* ChartValueFormatter.swift */; };
+		D0AA725B1E4BDE9F00089C24 /* FinishRunViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0AA725A1E4BDE9F00089C24 /* FinishRunViewController.swift */; };
+		D0AA725F1E4C0D9C00089C24 /* Run.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0AA725E1E4C0D9C00089C24 /* Run.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +31,8 @@
 		D03124521E3EF11000C82B52 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D05780421E49C3CB00A69A23 /* YAxisValueFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = YAxisValueFormatter.swift; path = Runner/YAxisValueFormatter.swift; sourceTree = SOURCE_ROOT; };
 		D05780441E49CA7400A69A23 /* ChartValueFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartValueFormatter.swift; sourceTree = "<group>"; };
+		D0AA725A1E4BDE9F00089C24 /* FinishRunViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FinishRunViewController.swift; path = Runner/FinishRunViewController.swift; sourceTree = SOURCE_ROOT; };
+		D0AA725E1E4C0D9C00089C24 /* Run.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Run.swift; sourceTree = "<group>"; };
 		E933CD6662C82A4C228703E0 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -84,11 +88,12 @@
 			children = (
 				D03124461E3EF11000C82B52 /* AppDelegate.swift */,
 				D07A4FC31E44487E00EEEF0A /* Model */,
+				D07A4FC21E44486F00EEEF0A /* Views */,
 				D07A4FC51E44489300EEEF0A /* View Models */,
 				D07A4FC41E44488B00EEEF0A /* Controllers */,
-				D07A4FC21E44486F00EEEF0A /* Views */,
 				D07A4FC61E4448E100EEEF0A /* UI */,
 				D07A4FC71E44490D00EEEF0A /* Assets */,
+				D0AA72601E4C235600089C24 /* Formatters */,
 				D07A4FC81E44493B00EEEF0A /* Supporting Files */,
 			);
 			name = Runner;
@@ -105,6 +110,7 @@
 		D07A4FC31E44487E00EEEF0A /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				D0AA725E1E4C0D9C00089C24 /* Run.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -113,6 +119,7 @@
 			isa = PBXGroup;
 			children = (
 				D03124481E3EF11000C82B52 /* RunningViewController.swift */,
+				D0AA725A1E4BDE9F00089C24 /* FinishRunViewController.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -145,10 +152,17 @@
 			isa = PBXGroup;
 			children = (
 				D03124521E3EF11000C82B52 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		D0AA72601E4C235600089C24 /* Formatters */ = {
+			isa = PBXGroup;
+			children = (
 				D05780421E49C3CB00A69A23 /* YAxisValueFormatter.swift */,
 				D05780441E49CA7400A69A23 /* ChartValueFormatter.swift */,
 			);
-			name = "Supporting Files";
+			name = Formatters;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -281,6 +295,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				D05780431E49C3CB00A69A23 /* YAxisValueFormatter.swift in Sources */,
+				D0AA725F1E4C0D9C00089C24 /* Run.swift in Sources */,
+				D0AA725B1E4BDE9F00089C24 /* FinishRunViewController.swift in Sources */,
 				D03124491E3EF11000C82B52 /* RunningViewController.swift in Sources */,
 				D03124471E3EF11000C82B52 /* AppDelegate.swift in Sources */,
 				D05780451E49CA7400A69A23 /* ChartValueFormatter.swift in Sources */,
