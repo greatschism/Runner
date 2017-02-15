@@ -13,12 +13,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
-        window?.rootViewController = UINavigationController(rootViewController: RunningViewController())
+//        window?.rootViewController = UINavigationController(rootViewController: RunningViewController())
+        
+        let layout  = UICollectionViewFlowLayout()
+        let feedVC = FeedViewController(collectionViewLayout: layout)
+        window?.rootViewController = UINavigationController(rootViewController: feedVC)
         
         return true
     }
