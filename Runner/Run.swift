@@ -14,7 +14,7 @@ enum RunType {
 
 struct Run {
 
-    var type: RunType
+    var type: RunType?
     var time: NSDate?
     var duration: Int
     var totalRunDistance: Int       // total distance actually ran, considering (minus) all distance in paused mode (this is the one displayed on screen)

@@ -2,13 +2,16 @@ PODS:
   - Charts (3.0.1):
     - Charts/Core (= 3.0.1)
   - Charts/Core (3.0.1)
+  - CKCircleMenuView (0.3.1)
 
 DEPENDENCIES:
   - Charts (~> 3.0.1)
+  - CKCircleMenuView
 
 SPEC CHECKSUMS:
   Charts: 0e84f4418e87dad6a9edde221fba37ebb51d3ba7
+  CKCircleMenuView: 2c4183c79c84cb94b8b27714d8e7ebcf4de67e5e
 
-PODFILE CHECKSUM: c88c0c6cff19539d712d47da32f0138485ed59fb
+PODFILE CHECKSUM: 9039e044a49f6a1a6a96a2d7a5862ec5bb85cf78
 
 COCOAPODS: 1.2.0

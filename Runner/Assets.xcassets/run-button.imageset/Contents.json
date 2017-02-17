@@ -2,11 +2,11 @@
   "images" : [
     {
       "idiom" : "universal",
+      "filename" : "run-button.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "road-track-athletic2.jpg",
       "scale" : "2x"
     },
     {

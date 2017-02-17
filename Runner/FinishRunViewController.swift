@@ -8,9 +8,16 @@
 
 import UIKit
 
+protocol FinishRunProtocol {
+    
+    func discard(_ selected: Bool)
+}
+
 class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
 
     var newRun: Run?
+    
+    var delegate: FinishRunProtocol?
     
     let titleLabel: UILabel = {
         let label = UILabel()
@@ -166,6 +173,18 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
         
         return button
     }()
+
+    lazy var discardButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("DISCARD", for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitleColor(UIColor.red, for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        
+        button.addTarget(self, action: #selector(discard), for: .touchUpInside)
+        
+        return button
+    }()
     
     lazy var bgImageView: UIImageView = {
         let imageView = UIImageView()
@@ -191,6 +210,7 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
         setupStatsContainerView()
         setupSaveButton()
         setupCancelButton()
+        setupDiscardButton()
         
         // debug
         if newRun != nil, let run = newRun {
@@ -276,15 +296,41 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
         cancelButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
     }
     
+    func setupDiscardButton() {
+        
+        view.addSubview(discardButton)
+        
+        // x, y, width, height constraints
+        discardButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: view.frame.width/4).isActive = true
+        discardButton.centerYAnchor.constraint(equalTo: saveButton.centerYAnchor).isActive = true
+        discardButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        discardButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+    }
+    
     func save() {
         
         print("saved run")
+        
+        // TODO: save to Firebase in Background with block
+        
     }
     
     func cancel() {
         
         newRun = nil
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    func discard() {
+        
+        newRun = nil
+        self.dismiss(animated: true) { 
+            
+            if let del = self.delegate {
+                
+                del.discard(true)
+            }
+        }
     }
     
     //MARK: CollectionView Delegate and DataSource
@@ -323,6 +369,7 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
         if let cell = collectionView.cellForItem(at: indexPath) as? EmojiCell {
             selectedEmoji = indexPath
             cell.emojiView.alpha = 1
+            animateView(view: cell.emojiView)
         }
     }
     
@@ -330,6 +377,19 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
         
         if let cell = collectionView.cellForItem(at: selectedEmoji) as? EmojiCell {
             cell.emojiView.alpha = 0.3
+        }
+    }
+    
+    func animateView(view: UIView) {
+        
+        UIView.animate(withDuration: 0.05, animations: {
+            
+            view.transform = .init(scaleX: 0.8, y: 0.8)
+        }) { _ in
+            
+            UIView.animate(withDuration: 0.05) {
+                view.transform = .identity
+            }
         }
     }
 }
@@ -364,5 +424,4 @@ class EmojiCell: UICollectionViewCell {
         addSubview(emojiView)
         emojiView.frame = CGRect(x: 0, y: 0, width: frame.width, height: frame.width)
     }
-    
 }

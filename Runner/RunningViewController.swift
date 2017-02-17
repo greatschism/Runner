@@ -11,7 +11,7 @@ import CoreLocation
 import HealthKit
 import Charts
 
-class RunningViewController: UIViewController {
+class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProtocol {
     
     lazy var newRun: Run = {
         var run = Run(type: RunType.run, time: nil, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], calories: 0, image: nil)
@@ -83,6 +83,18 @@ class RunningViewController: UIViewController {
     
     var finishButtonHorizontalConstraint = NSLayoutConstraint() // need property for animation
     
+    lazy var closeButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Close", for: .normal)
+        button.setTitleColor(UIColor.red, for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 24)
+        button.isHidden = false
+        button.addTarget(self, action: #selector(closeButtonPressed), for: .touchUpInside)
+        
+        return button
+    }()
+    
     lazy var bgImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.frame = self.view.frame
@@ -92,6 +104,9 @@ class RunningViewController: UIViewController {
         return imageView
     }()
     
+    let counterVC = CounterViewController()
+    let finishRunViewController = FinishRunViewController()
+
     override func viewDidLoad() {
         super.viewDidLoad()
     
@@ -103,10 +118,12 @@ class RunningViewController: UIViewController {
         view.addSubview(statsContainer)
         view.addSubview(finishRunButton)
         view.addSubview(resumePauseButton)
+        view.addSubview(closeButton)
         
         setupMainView()
         setupStartPauseButton()
         setupFinishRunButton()
+        setupCloseButton()
     }
     
 //    override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -146,6 +163,14 @@ class RunningViewController: UIViewController {
         finishRunButton.widthAnchor.constraint(equalToConstant: 70).isActive = true
         finishRunButton.heightAnchor.constraint(equalToConstant: 70).isActive = true
     }
+
+    func setupCloseButton() {
+        // x, y, width, height constraints
+        closeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -view.frame.width/4).isActive = true
+        closeButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10).isActive = true
+        closeButton.widthAnchor.constraint(equalToConstant: 70).isActive = true
+        closeButton.heightAnchor.constraint(equalToConstant: 70).isActive = true
+    }
     
     // MARK: - Running Updates and Calculations
     func startLocationUpdates() {
@@ -158,10 +183,13 @@ class RunningViewController: UIViewController {
     
     func startPauseButtonPressed() {
         
+        animateButton(button: resumePauseButton)
+        
         resumePauseButton.backgroundColor = UIColor.clear
         resumePauseButton.layer.cornerRadius = 0
         resumePauseButton.layer.masksToBounds = true
 
+        // Is going to enter in pause mode
         if timer != nil {
             
             resumePauseButton.setImage(UIImage(named:"ResumeButton"), for: .normal)
@@ -182,36 +210,65 @@ class RunningViewController: UIViewController {
             isPaused = true
             distanceWhenPaused = distance
         }
+        // Pressed the button for the first time (Start), so present the Counter View Controller
         else {
-            
+         
             if newRun.time == nil {
                 
+                closeButton.isHidden = true
+                
                 newRun.time = NSDate()
+                
+                counterVC.delegate = self
+                counterVC.modalTransitionStyle = .crossDissolve
+                present(counterVC, animated: true, completion: nil)
             }
-            
-            resumePauseButton.setImage(UIImage(named:"PauseButton"), for: .normal)
-            resumePauseButton.tintColor = UIColor(r: 0, g: 128, b: 255)
-            
-            resumePauseButtonHorizontalConstraint.constant = 0
-            finishButtonHorizontalConstraint.constant = 0
-            
-            if newRun.duration > 0 {
-            
-                UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
-
-                    self.view.layoutIfNeeded()
-
-                }, completion: { _ in
-                    
-                    self.finishRunButton.isHidden = true
-                })
+            else {
+                startingResumingRun()
             }
-            
-            startLocationUpdates()
-            locations.removeAll(keepingCapacity: false)
-            
-            timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(eachSecond), userInfo: nil, repeats: true)
         }
+    }
+    
+    func closeButtonPressed() {
+        
+        dismiss(animated: true, completion: nil)
+    }
+    
+    //MARK: - Counter View Controller Delegate
+    func completed(_ done: Bool) {
+
+        if done {
+            counterVC.modalTransitionStyle = .crossDissolve
+            counterVC.dismiss(animated: true, completion: {
+                self.startingResumingRun()
+            })
+        }
+    }
+    
+    func startingResumingRun() {
+        
+        resumePauseButton.setImage(UIImage(named:"PauseButton"), for: .normal)
+        resumePauseButton.tintColor = UIColor(r: 0, g: 128, b: 255)
+        
+        resumePauseButtonHorizontalConstraint.constant = 0
+        finishButtonHorizontalConstraint.constant = 0
+        
+        if newRun.duration > 0 {
+            
+            UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
+                
+                self.view.layoutIfNeeded()
+                
+            }, completion: { _ in
+                
+                self.finishRunButton.isHidden = true
+            })
+        }
+        
+        startLocationUpdates()
+        locations.removeAll(keepingCapacity: false)
+        
+        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(eachSecond), userInfo: nil, repeats: true)
     }
     
     // Called every second during a run
@@ -352,19 +409,18 @@ class RunningViewController: UIViewController {
     
     func finishRunButtonPressed() {
         
-        let finishRunViewController = FinishRunViewController()
+        finishRunViewController.delegate = self
         finishRunViewController.newRun = self.newRun
-        navigationController?.present(finishRunViewController, animated: true, completion: nil)
+        present(finishRunViewController, animated: true, completion: nil)
+    }
+    
+    // MARK: - Finish Run Delegate
+    func discard(_ selected: Bool) {
         
-        //        if timer != nil {
-        //            startPauseButton.setTitle("START", for: .normal)
-        //            duration = 0
-        //            durationLabel.text = "00:00:00"
-        //        }
-        
-        //        seconds = 0.0
-        //        distance = 0.0
-        //        locations.removeAll(keepCapacity: false)
+        if selected {
+            
+            dismiss(animated: true, completion: nil)
+        }
     }
     
     func heartRateFor(_ speed: Double) -> Double {
@@ -381,6 +437,19 @@ class RunningViewController: UIViewController {
         }
         
         return rate
+    }
+    
+    func animateButton(button: UIButton) {
+        
+        UIView.animate(withDuration: 0.05, animations: {
+            
+            button.transform = .init(scaleX: 0.8, y: 0.8)
+        }) { _ in
+            
+            UIView.animate(withDuration: 0.05) {
+                button.transform = .identity
+            }
+        }
     }
 }
 
