@@ -11,6 +11,8 @@ import CKCircleMenuView
 
 class FeedViewController: UICollectionViewController, CKCircleMenuDelegate {
     
+    var feedViewModel: FeedViewModel?
+    
     var circleMenuView = CKCircleMenuView()
     
     lazy var plusButton: UIButton = {
@@ -30,16 +32,37 @@ class FeedViewController: UICollectionViewController, CKCircleMenuDelegate {
     
     var plusButtonImages: [UIImage] = {
         
-        let images = [UIImage(named: "run-button")!, UIImage(named: "settings-button")!, UIImage(named: "stats-button")!]
+        var images = [UIImage]()
+        
+        if let runButtonImage = UIImage(named: "run-button"), let settingsButtonImage = UIImage(named: "settings-button"), let statsButtonImage = UIImage(named: "stats-button") {
+            
+            images = [runButtonImage, settingsButtonImage, statsButtonImage]
+        }
+        
         return images
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationItem.title = "FEED"
+        
+        if let feedVM = feedViewModel, let collectionView = feedViewModel?.collectionView {
 
-        collectionView?.backgroundColor = UIColor.white
+            // CollectionView delegate and datasource are handled in the view model.
+            self.collectionView!.delegate = feedVM
+            self.collectionView!.dataSource = feedVM
+            self.collectionView = collectionView
+        }
         
         setupPlusButtonView()
+        
+        bind()
+    }
+    
+    func bind() {
+     
+        // TODO: add Reactive bindings here
     }
     
     func setupPlusButtonView() {

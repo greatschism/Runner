@@ -10,21 +10,11 @@ import UIKit
 
 class AfterRunFeeling: NSObject {
     
-    static let numberOfEmojis = 12
-    static let emojiString = "emoji"
-    var possibleFeelings: [UIImage]?
+    let numberOfEmojis = 12
+    private let emojiString = "emoji"
     
-    static func getPossibleFeelings() -> [UIImage] {
+    func getEmojiImage(with index: String) -> UIImage? {
         
-        var possibleFeelings = [UIImage]()
-        
-        for index in 1...numberOfEmojis {
-            
-            if let image = UIImage(named: "\(emojiString)\(index)") {
-                possibleFeelings.append(image)
-            }
-        }
-        
-        return possibleFeelings
+        return UIImage(named: "\(self.emojiString)\(index)") ?? nil
     }
 }

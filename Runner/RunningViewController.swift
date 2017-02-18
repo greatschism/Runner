@@ -14,7 +14,7 @@ import Charts
 class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProtocol {
     
     lazy var newRun: Run = {
-        var run = Run(type: RunType.run, time: nil, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], calories: 0, image: nil)
+        var run = Run(type: RunType.run, time: nil, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], calories: 0, feeling: nil)
         
         return run
     }()
@@ -105,7 +105,6 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
     }()
     
     let counterVC = CounterViewController()
-    let finishRunViewController = FinishRunViewController()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -281,64 +280,26 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
             self.isPaused = false
         }
         
-        // Time calculation
+        // Process time calculation
         newRun.duration = newRun.duration + 1
-        let hours = String(format: "%02d", newRun.duration / 3600)
-        let minutes = String(format: "%02d", newRun.duration / 60 % 60)
-        let seconds = String(format: "%02d", newRun.duration % 60)
         
-        // Assign duration label
-        statsContainer.durationLabel.text = "\(hours):\(minutes):\(seconds)"
+        statsContainer.durationLabel.text = RawValueFormatter().getDurationString(with: newRun.duration)
         
-        // Running distance taking into account total distance in pause mode
+        // Process running distance taking into account total distance in pause mode
         newRun.totalRunDistance = self.distance - newRun.totalDistanceInPause
         
-        let kmInt = newRun.totalRunDistance / 1000 % 1000
+        statsContainer.distanceLabel.text = RawValueFormatter().getDistanceString(with: newRun.totalRunDistance)
         
-        let dmTemp = Double(newRun.totalRunDistance) / 1000
-        // let dmInt = Int(Double(dmTemp).roundTo(places: 2) * 100) % 100
-        let dmInt = Int((Double(dmTemp) * 100)) % 100
-        
-        let km: String
-        
-        if kmInt < 10 {
-            km = String(format: "%01d", kmInt)
-        }
-        else {
-            km = String(format: "%02d", kmInt)
-        }
-        
-        let dm = String(format: "%02d", dmInt)
-        
-        // Assign distance label
-        statsContainer.distanceLabel.text = "\(km).\(dm)"
-        
-        // Pace in 'min/km'
+        // Process Pace in 'min/km'
         let paceValue = (Double(newRun.duration) / Double(newRun.totalRunDistance)) * (1000.0 / 60.0)
         newRun.pace = Double(paceValue).roundTo(places: 2)
-        let roundPaceString = "\(newRun.pace)"
-        let paceComponents = roundPaceString.components(separatedBy: ".")
         
-        guard paceComponents.count == 2 else { return }
+        statsContainer.avgPaceLabel.text = RawValueFormatter().getPaceString(with: newRun.pace)
         
-        let paceMinutesPart = paceComponents[0]
-        var paceSecondsPart = paceComponents[1]
-        
-        if paceSecondsPart.characters.count == 1 {
-            
-            paceSecondsPart = paceSecondsPart.appending("0")
-        }
-        
-        guard let paceSecondsPartInt = Int(paceSecondsPart) else { return }
-        
-        let paceSecondsPartResult = paceSecondsPartInt * 60 / 100
-        paceSecondsPart = String(format: "%02d", paceSecondsPartResult)
-        
-        // Assign pace label
-        statsContainer.avgPaceLabel.text = "\(paceMinutesPart):\(paceSecondsPart)"
+        // TODO: put calories calculation logic to view model
         
         // Calories calculation
-        let speed = Double(self.distance) / Double(newRun.duration)   // speed in 'm/s'
+        let speed = Double(newRun.totalRunDistance) / Double(newRun.duration)   // speed in 'm/s'
         self.heartRate = self.heartRateFor(speed)                   // average for man around 30 years old
         
         let totalMinutes = Double(newRun.duration) / 60.0
@@ -349,12 +310,12 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
             newRun.calories = Int(((self.age * 0.074) + (self.weight * 0.1263) + (self.heartRate * 0.4472) - 20.4022) * totalMinutes / 4.184)
         }
         
-        let calString = String(format: "%03d", newRun.calories)
-        
         // Assign calories label
-        statsContainer.calLabel.text = "\(calString)"
+        statsContainer.calLabel.text = RawValueFormatter().getCaloriesString(with: newRun.calories)
         
         // Build the pace graph. Add a pace bar every kilometer of run
+        let kmInt = newRun.totalRunDistance / 1000 % 1000
+
         if kmInt != self.lastRanKM {
             
             if newRun.pacesBySegment.count == 0 {
@@ -374,6 +335,7 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
     
     // Bar chart for pace of each segment
     func updateChartWithData() {
+        
         var dataEntries = [BarChartDataEntry]()
         for i in 0..<newRun.pacesBySegment.count {
             let dataEntry = BarChartDataEntry(x: Double(i), y: Double(newRun.pacesBySegment[i]))
@@ -409,6 +371,7 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
     
     func finishRunButtonPressed() {
         
+        let finishRunViewController = FinishRunViewController()
         finishRunViewController.delegate = self
         finishRunViewController.newRun = self.newRun
         present(finishRunViewController, animated: true, completion: nil)

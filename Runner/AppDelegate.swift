@@ -17,10 +17,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
-//        window?.rootViewController = UINavigationController(rootViewController: RunningViewController())
         
-        let layout  = UICollectionViewFlowLayout()
+        let feedViewModel = FeedViewModel()
+        let layout  = feedViewModel.layout
         let feedVC = FeedViewController(collectionViewLayout: layout)
+        feedVC.feedViewModel = feedViewModel
         window?.rootViewController = UINavigationController(rootViewController: feedVC)
         
         return true

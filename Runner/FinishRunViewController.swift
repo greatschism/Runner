@@ -62,7 +62,7 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
     }()
     
     var selectedEmoji = IndexPath()
-    var afterRunFeelingOptions: [UIImage]?
+    var afterRunFeelingOptions = AfterRunFeeling()
     private let cellID = "cellID"
     
     // Stats views
@@ -71,75 +71,36 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
         var containerView = CompleteRunStatsContainerView(frame: .zero)
         
         // Process distance
-        let kmInt = self.newRun?.totalRunDistance != nil ? (self.newRun!.totalRunDistance / 1000 % 1000) : 0
-        
-        let dmTemp = self.newRun?.totalRunDistance != nil ? Double(self.newRun!.totalRunDistance) / 1000 : 0
-        let dmInt = Int((Double(dmTemp) * 100)) % 100
-        
-        let km: String
-        
-        if kmInt < 10 {
-            km = String(format: "%01d", kmInt)
+        if let totalRunDistance = self.newRun?.totalRunDistance {
+            
+            containerView.distanceContainer[1].text = RawValueFormatter().getDistanceString(with: totalRunDistance)
         }
         else {
-            km = String(format: "%02d", kmInt)
+            containerView.distanceContainer[1].text = "no data"
         }
-        
-        let dm = String(format: "%02d", dmInt)
-        
-        // Assign distance label
-        containerView.distanceContainer[1].text = "\(km).\(dm)"
         
         // Process duration
-        let hours: String
-        let minutes: String
-        let seconds: String
-        
         if let duration = self.newRun?.duration {
             
-            hours = String(format: "%02d", self.newRun!.duration / 3600)
-            minutes = String(format: "%02d", self.newRun!.duration / 60 % 60)
-            seconds = String(format: "%02d", self.newRun!.duration % 60)
+            containerView.durationContainer[1].text = RawValueFormatter().getDurationString(with: duration)
         }
         else {
-           
-            hours = "00"
-            minutes = "00"
-            seconds = "00"
+            
+            containerView.durationContainer[1].text = "no data"
         }
         
-        // Assing duration label
-        containerView.durationContainer[1].text = "\(hours):\(minutes):\(seconds)"
-        
         // Process pace
-        let roundPaceString = self.newRun?.pace != nil ? "\(self.newRun!.pace)" : "00:00"
-        let paceComponents = roundPaceString.components(separatedBy: ".")
-        
-        if paceComponents.count == 2 {
+        if let pace = self.newRun?.pace {
             
-            let paceMinutesPart = paceComponents[0]
-            var paceSecondsPart = paceComponents[1]
-            
-            if paceSecondsPart.characters.count == 1 {
-                
-                paceSecondsPart = paceSecondsPart.appending("0")
-            }
-            
-            let paceSecondsPartInt = Int(paceSecondsPart) ?? 0
-            
-            let paceSecondsPartResult = paceSecondsPartInt * 60 / 100
-            paceSecondsPart = String(format: "%02d", paceSecondsPartResult)
-            
-            // Assing pace label
-            containerView.paceContainer[1].text = "\(paceMinutesPart):\(paceSecondsPart)"
+            containerView.paceContainer[1].text = RawValueFormatter().getPaceString(with: pace)
         }
         else {
             // did not form the pace components array correctly
-            containerView.paceContainer[1].text = "00:00"
+            containerView.paceContainer[1].text = "no data"
         }
         
         // Process calories
-        let calString = self.newRun?.calories != nil ? String(format: "%03d", self.newRun!.calories) : "000"
+        let calString = self.newRun?.calories != nil ? RawValueFormatter().getCaloriesString(with: self.newRun!.calories) : "no data"
         
         // Assign calories label
         containerView.caloriesContainer[1].text = "\(calString)"
@@ -200,9 +161,6 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
         
         view.backgroundColor = UIColor.white        
         view.addSubview(bgImageView)
-
-        
-        afterRunFeelingOptions = AfterRunFeeling.getPossibleFeelings()
         
         setupTitleView()
         setupSubtitleView()
@@ -336,17 +294,13 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
     //MARK: CollectionView Delegate and DataSource
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 
-        if let count = afterRunFeelingOptions?.count {
-            return count
-        }
-        return 0
+        return afterRunFeelingOptions.numberOfEmojis
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellID, for: indexPath) as! EmojiCell
-        cell.emoji = afterRunFeelingOptions?[indexPath.item]
-        
+        cell.emoji = afterRunFeelingOptions.getEmojiImage(with: String(indexPath.row))
         cell.emojiView.alpha = 0.3
 
         if indexPath == selectedEmoji {
@@ -396,6 +350,12 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
 
 class EmojiCell: UICollectionViewCell {
     
+    let emojiView: UIImageView = {
+        let iv = UIImageView()
+        iv.contentMode = .scaleAspectFill
+        return iv
+    }()
+    
     var emoji: UIImage? {
         didSet {
             if let image = emoji {
@@ -403,12 +363,6 @@ class EmojiCell: UICollectionViewCell {
             }
         }
     }
-    
-    let emojiView: UIImageView = {
-        let iv = UIImageView()
-        iv.contentMode = .scaleAspectFill
-        return iv
-    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
