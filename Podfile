@@ -7,5 +7,9 @@ target 'Runner' do
   
   pod 'Charts', '~> 3.0.1'
   pod 'CKCircleMenuView'
+  pod 'Firebase/Core'
+  pod 'Firebase/Database'
+  pod 'Firebase/Auth'
+  pod 'Firebase/Storage'
 
 end

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class SettingsViewController: UIViewController {
 
@@ -46,8 +47,16 @@ class SettingsViewController: UIViewController {
     
     func logoutButtonPressed() {
         
-        print("logging out")
-        let loginVC = LoginViewController()
-        present(loginVC, animated: true, completion: nil)
+        do {
+            try FIRAuth.auth()?.signOut()
+            
+            let loginVC = LoginViewController()
+            present(loginVC, animated: true, completion: nil)
+            
+            print("[SETTINGS VIEW CONTROLLER] User successfuly logged out.")
+        }
+        catch let logoutError {
+            print(logoutError)
+        }
     }
 }

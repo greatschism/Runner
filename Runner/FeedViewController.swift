@@ -8,6 +8,7 @@
 
 import UIKit
 import CKCircleMenuView
+import Firebase
 
 class FeedViewController: UICollectionViewController, CKCircleMenuDelegate {
     
@@ -46,6 +47,8 @@ class FeedViewController: UICollectionViewController, CKCircleMenuDelegate {
         super.viewDidLoad()
         
         navigationItem.title = "FEED"
+        
+        
         
         if let feedVM = feedViewModel, let collectionView = feedViewModel?.collectionView {
 

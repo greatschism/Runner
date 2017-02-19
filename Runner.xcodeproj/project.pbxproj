@@ -27,6 +27,7 @@
 		D0DB66DD1E543B5800323A25 /* CounterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0DB66DC1E543B5800323A25 /* CounterViewController.swift */; };
 		D0F715391E59315E007D9CD6 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0F715381E59315E007D9CD6 /* SettingsViewController.swift */; };
 		D0F7153B1E593883007D9CD6 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0F7153A1E593883007D9CD6 /* LoginViewController.swift */; };
+		D0F7153D1E595924007D9CD6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D0F7153C1E595924007D9CD6 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +55,7 @@
 		D0DB66DC1E543B5800323A25 /* CounterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CounterViewController.swift; path = Runner/CounterViewController.swift; sourceTree = SOURCE_ROOT; };
 		D0F715381E59315E007D9CD6 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		D0F7153A1E593883007D9CD6 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		D0F7153C1E595924007D9CD6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		E933CD6662C82A4C228703E0 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -182,6 +184,7 @@
 			isa = PBXGroup;
 			children = (
 				D03124521E3EF11000C82B52 /* Info.plist */,
+				D0F7153C1E595924007D9CD6 /* GoogleService-Info.plist */,
 				D06CC4771E53D67100BAEF17 /* Runner-Bridging-Header.h */,
 			);
 			name = "Supporting Files";
@@ -266,6 +269,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D03124511E3EF11000C82B52 /* LaunchScreen.storyboard in Resources */,
+				D0F7153D1E595924007D9CD6 /* GoogleService-Info.plist in Resources */,
 				D031244E1E3EF11000C82B52 /* Assets.xcassets in Resources */,
 				D031244C1E3EF11000C82B52 /* Main.storyboard in Resources */,
 			);
