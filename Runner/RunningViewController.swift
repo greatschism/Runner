@@ -125,10 +125,6 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
         setupCloseButton()
     }
     
-//    override var preferredStatusBarStyle: UIStatusBarStyle {
-//        return .lightContent
-//    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         

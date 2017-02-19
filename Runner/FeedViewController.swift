@@ -50,8 +50,8 @@ class FeedViewController: UICollectionViewController, CKCircleMenuDelegate {
         if let feedVM = feedViewModel, let collectionView = feedViewModel?.collectionView {
 
             // CollectionView delegate and datasource are handled in the view model.
-            self.collectionView!.delegate = feedVM
-            self.collectionView!.dataSource = feedVM
+            self.collectionView?.delegate = feedVM
+            self.collectionView?.dataSource = feedVM
             self.collectionView = collectionView
         }
         
@@ -127,7 +127,7 @@ class FeedViewController: UICollectionViewController, CKCircleMenuDelegate {
             navigationController?.present(RunningViewController(), animated: true, completion: nil)
             break
         case 1:
-            navigationController?.present(RunningViewController(), animated: true, completion: nil)
+            navigationController?.present(SettingsViewController(), animated: true, completion: nil)
             break
         case 2:
             navigationController?.present(RunningViewController(), animated: true, completion: nil)

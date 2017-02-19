@@ -32,7 +32,7 @@ class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegat
         collectionView.register(FeedViewCell.self, forCellWithReuseIdentifier: self.cellID)
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.backgroundColor = UIColor.red
+        collectionView.backgroundColor = UIColor.gray
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.allowsMultipleSelection = false
         
