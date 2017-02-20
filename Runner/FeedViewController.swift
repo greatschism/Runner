@@ -23,8 +23,11 @@ class FeedViewController: UICollectionViewController, CKCircleMenuDelegate {
         button.setTitleColor(UIColor.white, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 24)
         button.backgroundColor = UIColor(r: 0, g: 128, b: 255)
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 2, height: 2)
+        button.layer.shadowOpacity = 0.5
+        button.layer.shadowRadius = 5
         button.layer.cornerRadius = 35
-        button.layer.masksToBounds = true
         
         button.addTarget(self, action: #selector(plusButtonPressed), for: .touchUpInside)
         
@@ -48,8 +51,6 @@ class FeedViewController: UICollectionViewController, CKCircleMenuDelegate {
         
         navigationItem.title = "FEED"
         
-        
-        
         if let feedVM = feedViewModel, let collectionView = feedViewModel?.collectionView {
 
             // CollectionView delegate and datasource are handled in the view model.
@@ -65,7 +66,6 @@ class FeedViewController: UICollectionViewController, CKCircleMenuDelegate {
     
     func bind() {
      
-        // TODO: add Reactive bindings here
     }
     
     func setupPlusButtonView() {
@@ -127,7 +127,9 @@ class FeedViewController: UICollectionViewController, CKCircleMenuDelegate {
         
         switch anIndex {
         case 0:
-            navigationController?.present(RunningViewController(), animated: true, completion: nil)
+            let runningVC = RunningViewController()
+            runningVC.currentUser = feedViewModel?.currentUser
+            navigationController?.present(runningVC, animated: true, completion: nil)
             break
         case 1:
             navigationController?.present(SettingsViewController(), animated: true, completion: nil)

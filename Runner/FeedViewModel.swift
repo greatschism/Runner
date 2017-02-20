@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Firebase
 
 class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
@@ -17,10 +18,13 @@ class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegat
 
     var runItems = [Run]()
     
+    var currentUser: User?
+    
     override init() {
         super.init()
         
         collectionView = getCollectionView()
+        
         bind()
     }
     
@@ -28,11 +32,12 @@ class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegat
         
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
+        layout.minimumLineSpacing = 1
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.register(FeedViewCell.self, forCellWithReuseIdentifier: self.cellID)
+        collectionView.register(FeedCell.self, forCellWithReuseIdentifier: self.cellID)
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.backgroundColor = UIColor.gray
+        collectionView.backgroundColor = UIColor(r: 220, g: 220, b: 220)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.allowsMultipleSelection = false
         
@@ -41,11 +46,60 @@ class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegat
     
     func bind() {
         
-        for _ in 0..<10 {
+        fetchCurrentUser()
+        observeRuns()
+    }
+    
+    func fetchCurrentUser() {
+        
+        guard let uid = FIRAuth.auth()?.currentUser?.uid else { return }
+        
+        FIRDatabase.database().reference().child("users").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
             
-            let run = Run(type: RunType.run, time: nil, duration: 10, totalRunDistance: 100, totalDistanceInPause: 0, pace: 5.0, pacesBySegment: [], calories: 0, feeling: nil)
-            runItems.append(run)
-        }        
+            if let dictionary = snapshot.value as? [String: Any] {
+                
+                let user = User()
+                user.id = uid
+                user.name = dictionary["name"] as? String
+                
+                self.currentUser = user
+                
+                print("curren user is \(user)")
+            }
+        }, withCancel: nil)
+    }
+    
+    func observeRuns() {
+        
+        FIRDatabase.database().reference().child("runs").observe(.childAdded, with: { (snapshot) in
+            
+            print("\(snapshot)")
+            
+            if let runsDictionary = snapshot.value as? [String: Any] {
+                
+                var foundRun = Run(type: RunType.run, time: nil, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], calories: 0, feeling: nil, user: nil)
+                
+                if let runDuration = runsDictionary["duration"] as? Int,
+                    let runDistance = runsDictionary["totalRunDistance"] as? Int,
+                    let runPace = runsDictionary["pace"] as? Double, let userID = runsDictionary["userID"] as? String  {
+
+                    let user = User()
+                    user.id = userID
+                    
+                    foundRun.user = user
+                    foundRun.duration = runDuration
+                    foundRun.totalRunDistance = runDistance
+                    foundRun.pace = runPace
+                    
+                    self.runItems.append(foundRun)
+                    
+                    DispatchQueue.main.async {
+                        
+                        self.collectionView?.reloadData()
+                    }
+                }
+            }
+        }, withCancel: nil)
     }
     
     //MARK: CollectionView Delegate and DataSource
@@ -56,88 +110,36 @@ class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegat
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.cellID, for: indexPath) as! FeedViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.cellID, for: indexPath) as! FeedCell
         
         cell.backgroundColor = UIColor.white
         
         let run = runItems[indexPath.item]
-        let feeling = AfterRunFeeling()
-        cell.emoji = feeling.getEmojiImage(with: String(indexPath.row))
-        cell.runDistance.text = "\(run.totalRunDistance)"
+        
+        if let uid = run.user?.id {
+            
+            let ref = FIRDatabase.database().reference().child("users").child(uid)
+            ref.observeSingleEvent(of: .value, with: { (snapshot) in
+                
+                print(snapshot)
+                
+                if let userDictionary = snapshot.value as? [String: Any] {
+                    
+                    cell.usernameLabel.text = userDictionary["name"] as? String
+                }
+            }, withCancel: nil)
+            
+        }
+        
+        cell.profileImage = UIImage(named: "mario-run")
+        cell.runDistanceLabel.text = RawValueFormatter().getDistanceString(with: run.totalRunDistance) + " km"
+        cell.runDurationLabel.text = RawValueFormatter().getDurationString(with: run.duration)
+        cell.runPaceLabel.text = RawValueFormatter().getPaceString(with: run.pace) + " /km"
         
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: 70)
-    }
-    
-//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        
-//        if let cell = collectionView.cellForItem(at: indexPath) as? EmojiCell {
-//            selectedEmoji = indexPath
-//            cell.emojiView.alpha = 1
-//            animateView(view: cell.emojiView)
-//        }
-//    }
-//    
-//    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-//        
-//        if let cell = collectionView.cellForItem(at: selectedEmoji) as? EmojiCell {
-//            cell.emojiView.alpha = 0.3
-//        }
-//    }
-}
-
-class FeedViewCell: UICollectionViewCell {
-    
-    var emoji: UIImage? {
-        didSet {
-            if let image = emoji {
-                emojiView.image = image
-            }
-        }
-    }
-    
-    let emojiView: UIImageView = {
-        let iv = UIImageView()
-        iv.translatesAutoresizingMaskIntoConstraints = false
-        iv.contentMode = .scaleAspectFill
-        return iv
-    }()
-    
-    var runDistance: UILabel = {
-        
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        setupViews()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func setupViews() {
-        addSubview(emojiView)
-        
-        // x, y, width, height constraints
-        emojiView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
-        emojiView.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
-        emojiView.widthAnchor.constraint(equalTo: self.heightAnchor, constant: -10).isActive = true
-        emojiView.heightAnchor.constraint(equalTo: self.heightAnchor, constant: -10).isActive = true
-        
-        addSubview(runDistance)
-        // x, y, width, height constraints
-        runDistance.leftAnchor.constraint(equalTo: emojiView.rightAnchor, constant: 10).isActive = true
-        runDistance.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        runDistance.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        runDistance.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        
+        return CGSize(width: collectionView.frame.width, height: 80)
     }
 }

@@ -23,4 +23,5 @@ struct Run {
     var pacesBySegment: [Int]       // each item is the pace value for a segment(split) of 1 km run
     var calories: Int
     var feeling: String?
+    var user: User?
 }

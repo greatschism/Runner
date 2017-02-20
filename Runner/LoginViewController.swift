@@ -10,7 +10,7 @@ import UIKit
 import Firebase
 
 class LoginViewController: UIViewController {
-
+    
     lazy var bgImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.frame = self.view.frame
@@ -104,6 +104,8 @@ class LoginViewController: UIViewController {
     var emailTextFieldHeightAnchor: NSLayoutConstraint?
     var passwordTextFieldHeightAnchor: NSLayoutConstraint?
     
+    var inputsContainerViewCenterYAnchor: NSLayoutConstraint?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -117,6 +119,25 @@ class LoginViewController: UIViewController {
         setupInputsContainerView()
         setupLoginRegisterButton()
         setupLoginRegisterSegmentedControl()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardNotification), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardNotification), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+    }
+    
+    func handleKeyboardNotification(notification: Notification) {
+        
+        let isKeyboardShowing = notification.name == NSNotification.Name.UIKeyboardWillShow
+        
+        if isKeyboardShowing {
+            
+            self.inputsContainerViewCenterYAnchor?.constant = -80
+            
+            UIView.animate(withDuration: 0, delay: 0, options: .curveEaseOut, animations: {
+                
+                self.view.layoutIfNeeded()
+                
+            }, completion: nil)
+        }
     }
     
 //    override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -164,7 +185,8 @@ class LoginViewController: UIViewController {
         
         // x, y, width, height constraints
         inputsContainerView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        inputsContainerView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -10).isActive = true
+        inputsContainerViewCenterYAnchor = inputsContainerView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -10)
+        inputsContainerViewCenterYAnchor?.isActive = true
         inputsContainerView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -32).isActive = true
         inputsContainerHeightAnchor = inputsContainerView.heightAnchor.constraint(equalToConstant: 150)
         inputsContainerHeightAnchor?.isActive = true
@@ -245,8 +267,14 @@ class LoginViewController: UIViewController {
             
             print("[LOGIN VIEW CONTROLLER] User successfuly logged in.")
 
+            guard let firUser = user else { return }
+            
+            let currentUser = User()
+            currentUser.id = firUser.uid
+            currentUser.name = firUser.displayName
+            
             // Successfully logged user in
-            self.presentFeedViewController()
+            self.presentFeedViewController(with: currentUser)
             
         })
     }
@@ -270,7 +298,9 @@ class LoginViewController: UIViewController {
             // Successfully authenticated user
             guard let uid = user?.uid else { return }
             
-            let firebaseRef = FIRDatabase.database().reference(fromURL: "https://runner-23510.firebaseio.com/")
+//            let firebaseRef = FIRDatabase.database().reference(fromURL: "https://runner-23510.firebaseio.com/")
+            let firebaseRef = FIRDatabase.database().reference()
+
             let usersReference = firebaseRef.child("users").child(uid)
             
             let values = ["name": name, "email": email]
@@ -283,14 +313,21 @@ class LoginViewController: UIViewController {
                 
                 print("[LOGIN VIEW CONTROLLER] User successfuly registered and saved to database.")
 
-                self.presentFeedViewController()
+                guard let firUser = user else { return }
+                
+                let currentUser = User()
+                currentUser.id = firUser.uid
+                currentUser.name = firUser.displayName
+                
+                self.presentFeedViewController(with: currentUser)
             })
         })
     }
     
-    func presentFeedViewController() {
+    func presentFeedViewController(with user:User) {
         
         let feedViewModel = FeedViewModel()
+        feedViewModel.currentUser = user
         let layout  = feedViewModel.layout
         let feedVC = FeedViewController(collectionViewLayout: layout)
         feedVC.feedViewModel = feedViewModel

@@ -13,12 +13,13 @@ import Charts
 
 class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProtocol {
     
-    lazy var newRun: Run = {
-        var run = Run(type: RunType.run, time: nil, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], calories: 0, feeling: nil)
+    var newRun: Run = {
+        var run = Run(type: RunType.run, time: nil, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], calories: 0, feeling: nil, user: nil)
         
         return run
     }()
     
+    var currentUser: User?
     var distance = 0
     
     // For calulation of calories burned
@@ -287,16 +288,22 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
         statsContainer.distanceLabel.text = RawValueFormatter().getDistanceString(with: newRun.totalRunDistance)
         
         // Process Pace in 'min/km'
-        let paceValue = (Double(newRun.duration) / Double(newRun.totalRunDistance)) * (1000.0 / 60.0)
-        newRun.pace = Double(paceValue).roundTo(places: 2)
+        if newRun.totalRunDistance != 0 {
+
+            let paceValue = (Double(newRun.duration) / Double(newRun.totalRunDistance)) * (1000.0 / 60.0)
+            newRun.pace = Double(paceValue).roundTo(places: 2)
+        }
         
         statsContainer.avgPaceLabel.text = RawValueFormatter().getPaceString(with: newRun.pace)
         
         // TODO: put calories calculation logic to view model
         
         // Calories calculation
-        let speed = Double(newRun.totalRunDistance) / Double(newRun.duration)   // speed in 'm/s'
-        self.heartRate = self.heartRateFor(speed)                   // average for man around 30 years old
+        if newRun.duration != 0 {
+            
+            let speed = Double(newRun.totalRunDistance) / Double(newRun.duration)   // speed in 'm/s'
+            self.heartRate = self.heartRateFor(speed)                   // average for man around 30 years old
+        }
         
         let totalMinutes = Double(newRun.duration) / 60.0
         if self.isMan {
@@ -367,6 +374,11 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
     
     func finishRunButtonPressed() {
         
+        if currentUser != nil {
+            
+            newRun.user = currentUser
+        }
+        
         let finishRunViewController = FinishRunViewController()
         finishRunViewController.delegate = self
         finishRunViewController.newRun = self.newRun
@@ -374,12 +386,9 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
     }
     
     // MARK: - Finish Run Delegate
-    func discard(_ selected: Bool) {
+    func shouldDismiss() {
         
-        if selected {
-            
-            dismiss(animated: true, completion: nil)
-        }
+        dismiss(animated: true, completion: nil)
     }
     
     func heartRateFor(_ speed: Double) -> Double {

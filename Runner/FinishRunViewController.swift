@@ -7,10 +7,11 @@
 //
 
 import UIKit
+import Firebase
 
 protocol FinishRunProtocol {
     
-    func discard(_ selected: Bool)
+    func shouldDismiss()
 }
 
 class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
@@ -123,14 +124,14 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
         return button
     }()
 
-    lazy var cancelButton: UIButton = {
+    lazy var resumeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("RESUME", for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitleColor(UIColor.red, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         
-        button.addTarget(self, action: #selector(cancel), for: .touchUpInside)
+        button.addTarget(self, action: #selector(resume), for: .touchUpInside)
         
         return button
     }()
@@ -167,7 +168,7 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
         setupInputFeelingView()
         setupStatsContainerView()
         setupSaveButton()
-        setupCancelButton()
+        setupResumeButton()
         setupDiscardButton()
         
         // debug
@@ -243,15 +244,15 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
         saveButton.heightAnchor.constraint(equalToConstant: 70).isActive = true
     }
     
-    func setupCancelButton() {
+    func setupResumeButton() {
 
-        view.addSubview(cancelButton)
+        view.addSubview(resumeButton)
         
         // x, y, width, height constraints
-        cancelButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -view.frame.width/4).isActive = true
-        cancelButton.centerYAnchor.constraint(equalTo: saveButton.centerYAnchor).isActive = true
-        cancelButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        cancelButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        resumeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -view.frame.width/4).isActive = true
+        resumeButton.centerYAnchor.constraint(equalTo: saveButton.centerYAnchor).isActive = true
+        resumeButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        resumeButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
     }
     
     func setupDiscardButton() {
@@ -267,13 +268,39 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
     
     func save() {
         
-        print("saved run")
+        let ref = FIRDatabase.database().reference().child("runs")
+        let childRef = ref.childByAutoId()
         
-        // TODO: save to Firebase in Background with block
+        guard let user = newRun?.user, let uid = user.id else { return }
         
+        let timestamp = Int(NSDate().timeIntervalSince1970)
+        
+        var values = [String:Any]()
+        
+        guard let newRun = newRun else { return }
+        
+        values = ["totalRunDistance":newRun.totalRunDistance, "duration":newRun.duration, "pace": newRun.pace, "userID":uid, "timestamp": timestamp]
+        childRef.updateChildValues(values) { (error, ref) in
+            
+            if error != nil {
+                
+                print(error.debugDescription)
+                return
+            }
+            
+            print("[FINISH VIEW CONTROLLER] saved new run to firebase.")
+            
+            self.dismiss(animated: true) {
+                
+                if let del = self.delegate {
+                    
+                    del.shouldDismiss()
+                }
+            }
+        }
     }
     
-    func cancel() {
+    func resume() {
         
         newRun = nil
         self.dismiss(animated: true, completion: nil)
@@ -286,7 +313,7 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
             
             if let del = self.delegate {
                 
-                del.discard(true)
+                del.shouldDismiss()
             }
         }
     }
