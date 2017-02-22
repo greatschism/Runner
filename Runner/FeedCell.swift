@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class FeedCell: UICollectionViewCell {
     
@@ -129,5 +130,30 @@ class FeedCell: UICollectionViewCell {
         runPaceLabel.topAnchor.constraint(equalTo: runDistanceLabel.topAnchor).isActive = true
         runPaceLabel.widthAnchor.constraint(equalToConstant: 80).isActive = true
         runPaceLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+    }
+    
+    func configure(with run: Run) {
+        
+        backgroundColor = UIColor.white
+        
+        if let uid = run.user?.id {
+            
+            let ref = FIRDatabase.database().reference().child("users").child(uid)
+            ref.observeSingleEvent(of: .value, with: { (snapshot) in
+                
+                print(snapshot)
+                
+                if let userDictionary = snapshot.value as? [String: Any] {
+                    
+                    self.usernameLabel.text = userDictionary["name"] as? String
+                }
+            }, withCancel: nil)
+            
+        }
+        
+        profileImage = UIImage(named: "mario-run")
+        runDistanceLabel.text = RawValueFormatter().getDistanceString(with: run.totalRunDistance) + " km"
+        runDurationLabel.text = RawValueFormatter().getDurationString(with: run.duration)
+        runPaceLabel.text = RawValueFormatter().getPaceString(with: run.pace) + " /km"
     }
 }

@@ -13,11 +13,8 @@ class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegat
     
     let cellID = "cellID"
     let layout = UICollectionViewFlowLayout()
-    
     var collectionView: UICollectionView?
-
     var runItems = [Run]()
-    
     var currentUser: User?
     
     override init() {
@@ -111,31 +108,8 @@ class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegat
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.cellID, for: indexPath) as! FeedCell
-        
-        cell.backgroundColor = UIColor.white
-        
         let run = runItems[indexPath.item]
-        
-        if let uid = run.user?.id {
-            
-            let ref = FIRDatabase.database().reference().child("users").child(uid)
-            ref.observeSingleEvent(of: .value, with: { (snapshot) in
-                
-                print(snapshot)
-                
-                if let userDictionary = snapshot.value as? [String: Any] {
-                    
-                    cell.usernameLabel.text = userDictionary["name"] as? String
-                }
-            }, withCancel: nil)
-            
-        }
-        
-        cell.profileImage = UIImage(named: "mario-run")
-        cell.runDistanceLabel.text = RawValueFormatter().getDistanceString(with: run.totalRunDistance) + " km"
-        cell.runDurationLabel.text = RawValueFormatter().getDurationString(with: run.duration)
-        cell.runPaceLabel.text = RawValueFormatter().getPaceString(with: run.pace) + " /km"
-        
+        cell.configure(with: run)
         return cell
     }
     
