@@ -17,6 +17,8 @@ class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegat
     var runItems = [Run]()
     var currentUser: User?
     
+    let syncManager = SyncManager.sharedInstance
+    
     override init() {
         super.init()
         
@@ -44,7 +46,8 @@ class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegat
     func bind() {
         
         fetchCurrentUser()
-        observeRuns()
+        observeAddedRuns()
+        observeRemovedRuns()
     }
     
     func fetchCurrentUser() {
@@ -61,42 +64,56 @@ class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegat
                 
                 self.currentUser = user
                 
-                print("curren user is \(user)")
+                print("[FEEDVIEWMODEL] current user is \(user.name)")
             }
         }, withCancel: nil)
     }
     
-    func observeRuns() {
+    func observeAddedRuns() {
         
-        FIRDatabase.database().reference().child("runs").observe(.childAdded, with: { (snapshot) in
+        syncManager.getAddedRun { (run, error) in
             
-            print("\(snapshot)")
+            if error != nil {
+                
+                print("[FEEDVIEWMODEL] unable to fetch run, error = \(error)")
+                return
+            }
             
-            if let runsDictionary = snapshot.value as? [String: Any] {
-                
-                var foundRun = Run(type: RunType.run, time: nil, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], calories: 0, feeling: nil, user: nil)
-                
-                if let runDuration = runsDictionary["duration"] as? Int,
-                    let runDistance = runsDictionary["totalRunDistance"] as? Int,
-                    let runPace = runsDictionary["pace"] as? Double, let userID = runsDictionary["userID"] as? String  {
+            DispatchQueue.main.async {
 
-                    let user = User()
-                    user.id = userID
+                self.runItems.insert(run, at: 0)
+
+                self.collectionView?.performBatchUpdates({
                     
-                    foundRun.user = user
-                    foundRun.duration = runDuration
-                    foundRun.totalRunDistance = runDistance
-                    foundRun.pace = runPace
+                    self.collectionView?.insertItems(at: [IndexPath(row: 0, section: 0)])
+                }, completion: nil)
+            }
+        }
+    }
+    
+    func observeRemovedRuns() {
+        
+        syncManager.getRemovedRun { (removedIndex, error) in
+        
+            if error != nil {
+                
+                print("[FEEDVIEWMODEL] unable to fetch run, error = \(error)")
+                return
+            }
+            
+            DispatchQueue.main.async {
+                
+                if let index = removedIndex {
                     
-                    self.runItems.append(foundRun)
+                    self.runItems.remove(at: index)
                     
-                    DispatchQueue.main.async {
+                    self.collectionView?.performBatchUpdates({
                         
-                        self.collectionView?.reloadData()
-                    }
+                        self.collectionView?.deleteItems(at: [IndexPath(row: index, section: 0)])
+                    }, completion: nil)
                 }
             }
-        }, withCancel: nil)
+        }
     }
     
     //MARK: CollectionView Delegate and DataSource
@@ -114,6 +131,6 @@ class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegat
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: 80)
+        return CGSize(width: collectionView.frame.width, height: 86)
     }
 }

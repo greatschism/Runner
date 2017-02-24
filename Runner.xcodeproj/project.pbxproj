@@ -24,6 +24,7 @@
 		D07E7EE61E4F024A001E7A75 /* AfterRunFeeling.swift in Sources */ = {isa = PBXBuildFile; fileRef = D07E7EE51E4F024A001E7A75 /* AfterRunFeeling.swift */; };
 		D07E7EE81E512B0C001E7A75 /* CompleteRunStatsContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D07E7EE71E512B0C001E7A75 /* CompleteRunStatsContainerView.swift */; };
 		D07E7EEA1E51A46A001E7A75 /* InProgressRunStatsContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D07E7EE91E51A46A001E7A75 /* InProgressRunStatsContainerView.swift */; };
+		D090A5F31E601D7600F88047 /* SyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D090A5F21E601D7600F88047 /* SyncManager.swift */; };
 		D0AA725B1E4BDE9F00089C24 /* FinishRunViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0AA725A1E4BDE9F00089C24 /* FinishRunViewController.swift */; };
 		D0AA725F1E4C0D9C00089C24 /* Run.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0AA725E1E4C0D9C00089C24 /* Run.swift */; };
 		D0DB66DD1E543B5800323A25 /* CounterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0DB66DC1E543B5800323A25 /* CounterViewController.swift */; };
@@ -54,6 +55,7 @@
 		D07E7EE51E4F024A001E7A75 /* AfterRunFeeling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AfterRunFeeling.swift; path = Runner/AfterRunFeeling.swift; sourceTree = SOURCE_ROOT; };
 		D07E7EE71E512B0C001E7A75 /* CompleteRunStatsContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompleteRunStatsContainerView.swift; sourceTree = "<group>"; };
 		D07E7EE91E51A46A001E7A75 /* InProgressRunStatsContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InProgressRunStatsContainerView.swift; sourceTree = "<group>"; };
+		D090A5F21E601D7600F88047 /* SyncManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SyncManager.swift; path = Runner/SyncManager.swift; sourceTree = SOURCE_ROOT; };
 		D0AA725A1E4BDE9F00089C24 /* FinishRunViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FinishRunViewController.swift; path = Runner/FinishRunViewController.swift; sourceTree = SOURCE_ROOT; };
 		D0AA725E1E4C0D9C00089C24 /* Run.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Run.swift; sourceTree = "<group>"; };
 		D0DB66DC1E543B5800323A25 /* CounterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CounterViewController.swift; path = Runner/CounterViewController.swift; sourceTree = SOURCE_ROOT; };
@@ -121,6 +123,7 @@
 				D07A4FC61E4448E100EEEF0A /* UI */,
 				D07A4FC71E44490D00EEEF0A /* Assets */,
 				D0AA72601E4C235600089C24 /* Formatters */,
+				D090A5F11E601D2600F88047 /* Server */,
 				D07A4FC81E44493B00EEEF0A /* Supporting Files */,
 			);
 			name = Runner;
@@ -194,6 +197,14 @@
 				D06CC4771E53D67100BAEF17 /* Runner-Bridging-Header.h */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		D090A5F11E601D2600F88047 /* Server */ = {
+			isa = PBXGroup;
+			children = (
+				D090A5F21E601D7600F88047 /* SyncManager.swift */,
+			);
+			name = Server;
 			sourceTree = "<group>";
 		};
 		D0AA72601E4C235600089C24 /* Formatters */ = {
@@ -354,6 +365,7 @@
 				D07E7EE61E4F024A001E7A75 /* AfterRunFeeling.swift in Sources */,
 				D047A35B1E57CB9400B731E5 /* FeedViewModel.swift in Sources */,
 				D02138821E5AE11C00BB57DC /* FeedCell.swift in Sources */,
+				D090A5F31E601D7600F88047 /* SyncManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
