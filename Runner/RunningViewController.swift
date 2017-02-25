@@ -14,7 +14,7 @@ import Charts
 class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProtocol {
     
     var newRun: Run = {
-        var run = Run(type: RunType.run, time: nil, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], calories: 0, feeling: nil, user: nil)
+        var run = Run(id: nil, type: RunType.run, timestamp: nil, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], calories: 0, feeling: nil, user: nil)
         
         return run
     }()
@@ -209,11 +209,11 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
         // Pressed the button for the first time (Start), so present the Counter View Controller
         else {
          
-            if newRun.time == nil {
+            if newRun.timestamp == nil {
                 
                 closeButton.isHidden = true
                 
-                newRun.time = NSDate()
+                newRun.timestamp = Int(NSDate().timeIntervalSince1970)
                 
                 counterVC.delegate = self
                 counterVC.modalTransitionStyle = .crossDissolve

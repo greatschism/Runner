@@ -25,19 +25,21 @@ class SyncManager {
             
             if let runDictionary = snapshot.value as? [String: Any] {
                 
-                var foundRun = Run(type: RunType.run, time: nil, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], calories: 0, feeling: nil, user: nil)
+                var foundRun = Run(id: nil, type: RunType.run, timestamp: 0, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], calories: 0, feeling: nil, user: nil)
                 
                 if let runDuration = runDictionary["duration"] as? Int,
                     let runDistance = runDictionary["totalRunDistance"] as? Int,
-                    let runPace = runDictionary["pace"] as? Double, let userID = runDictionary["userID"] as? String  {
+                    let runPace = runDictionary["pace"] as? Double, let userID = runDictionary["userID"] as? String, let startingTime = runDictionary["timestamp"] as? Int {
                     
                     let user = User()
                     user.id = userID
                     
+                    foundRun.id = snapshot.key
                     foundRun.user = user
                     foundRun.duration = runDuration
                     foundRun.totalRunDistance = runDistance
                     foundRun.pace = runPace
+                    foundRun.timestamp = startingTime
                     
                     self.indexKeys.insert(snapshot.key, at: 0)
                     
@@ -61,7 +63,7 @@ class SyncManager {
         }, withCancel: nil)
     }
     
-    func removeIndex(of key: String) -> Int? {
+    private func removeIndex(of key: String) -> Int? {
         
         if let index = indexKeys.index(of: key) {
             
@@ -70,5 +72,24 @@ class SyncManager {
         }
         
         return nil
+    }
+    
+    func removeRunFromDataBase(with run: Run) {
+        
+        if let id = run.id {
+            
+            FIRDatabase.database().reference().child("runs").child(id).removeValue(completionBlock: { (error, reference) in
+                
+                if error != nil {
+                    
+                    print("[SYNC MANAGER] fail to delete message in \(#function), error: \(error)")
+                }
+                else {
+                    
+                    print("[SYNC MANAGER] succeded to remove in \(#function) the item: \(run)")
+                }
+                
+            })
+        }
     }
 }

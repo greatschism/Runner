@@ -67,6 +67,15 @@ class FeedCell: UICollectionViewCell {
         return label
     }()
     
+    let runTimeLabel: UILabel = {
+       
+        let label = UILabel()
+        label.textColor = UIColor.lightGray
+        label.font = UIFont(name: "AvenirNext-Regular", size: 12)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     let emojiView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -90,7 +99,7 @@ class FeedCell: UICollectionViewCell {
         addSubview(runDistanceLabel)
         addSubview(runDurationLabel)
         addSubview(runPaceLabel)
-        
+        addSubview(runTimeLabel)
         
         setupViews()
     }
@@ -130,6 +139,12 @@ class FeedCell: UICollectionViewCell {
         runPaceLabel.topAnchor.constraint(equalTo: runDistanceLabel.topAnchor).isActive = true
         runPaceLabel.widthAnchor.constraint(equalToConstant: 80).isActive = true
         runPaceLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        
+        // x, y, width, height constraints
+        runTimeLabel.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
+        runTimeLabel.centerYAnchor.constraint(equalTo: usernameLabel.centerYAnchor).isActive = true
+        runTimeLabel.widthAnchor.constraint(equalToConstant: 150).isActive = true
+        runTimeLabel.heightAnchor.constraint(equalTo: runDistanceLabel.heightAnchor).isActive = true
     }
     
     func configure(with run: Run) {
@@ -139,6 +154,7 @@ class FeedCell: UICollectionViewCell {
         if let uid = run.user?.id {
             
             let ref = FIRDatabase.database().reference().child("users").child(uid)
+            
             ref.observeSingleEvent(of: .value, with: { (snapshot) in
                 
                 print(snapshot)
@@ -148,12 +164,20 @@ class FeedCell: UICollectionViewCell {
                     self.usernameLabel.text = userDictionary["name"] as? String
                 }
             }, withCancel: nil)
-            
         }
         
         profileImage = UIImage(named: "mario-run")
         runDistanceLabel.text = RawValueFormatter().getDistanceString(with: run.totalRunDistance) + " km"
         runDurationLabel.text = RawValueFormatter().getDurationString(with: run.duration)
         runPaceLabel.text = RawValueFormatter().getPaceString(with: run.pace) + " /km"
+        
+        if let startRunTime = run.timestamp {
+            
+            let timestampDate = Date(timeIntervalSince1970: Double(startRunTime))
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateStyle = .medium
+            dateFormatter.timeStyle = .short
+            runTimeLabel.text = dateFormatter.string(from: timestampDate)
+        }
     }
 }

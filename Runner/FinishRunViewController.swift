@@ -272,12 +272,10 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
         let childRef = ref.childByAutoId()
         
         guard let user = newRun?.user, let uid = user.id else { return }
-        
-        let timestamp = Int(NSDate().timeIntervalSince1970)
-        
+                
         var values = [String:Any]()
         
-        guard let newRun = newRun else { return }
+        guard let newRun = newRun, let timestamp = newRun.timestamp else { return }
         
         values = ["totalRunDistance":newRun.totalRunDistance, "duration":newRun.duration, "pace": newRun.pace, "userID":uid, "timestamp": timestamp]
         childRef.updateChildValues(values) { (error, ref) in
