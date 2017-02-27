@@ -12,8 +12,17 @@ import Charts
 class ChartValueFormatter: NSObject, IValueFormatter {
 
     func stringForValue(_ value: Double, entry: ChartDataEntry, dataSetIndex: Int, viewPortHandler: ViewPortHandler?) -> String {
+        
+        let minutes: String
+        
+        if (Int(value) / 60 % 60) >= 10 {
             
-            let minutes = String(format: "%02d", Int(value) / 60 % 60)
+            minutes = String(format: "%02d", Int(value) / 60 % 60)
+        }
+        else {
+            
+            minutes = String(format: "%01d", Int(value) / 60 % 60)
+        }
             let seconds = String(format: "%02d", Int(value) % 60)
             return "\(minutes):\(seconds)"
     }

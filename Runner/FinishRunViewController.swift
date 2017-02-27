@@ -8,13 +8,14 @@
 
 import UIKit
 import Firebase
+import Charts
 
 protocol FinishRunProtocol {
     
     func shouldDismiss()
 }
 
-class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+class FinishRunViewController: UIViewController/*, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource*/ {
 
     var newRun: Run?
     
@@ -30,41 +31,41 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
         return label
     }()
     
-    let subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.text = Motivation().phrase
-        label.numberOfLines = 0
-        label.textColor = UIColor(r: 32, g: 32, b: 32)
-        label.textAlignment = .center
-        label.font = UIFont(name: "AvenirNext-Regular", size: 24)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+//    let subtitleLabel: UILabel = {
+//        let label = UILabel()
+//        label.text = Motivation().phrase
+//        label.numberOfLines = 0
+//        label.textColor = UIColor(r: 32, g: 32, b: 32)
+//        label.textAlignment = .center
+//        label.font = UIFont(name: "AvenirNext-Regular", size: 24)
+//        label.translatesAutoresizingMaskIntoConstraints = false
+//        return label
+//    }()
     
-    let inputFeelingView: UIView = { // container view for emoji collecion view
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
+//    let inputFeelingView: UIView = { // container view for emoji collecion view
+//        let view = UIView()
+//        view.translatesAutoresizingMaskIntoConstraints = false
+//        return view
+//    }()
     
     // Emoji views
-    lazy var emojiCollectionView: UICollectionView = {
-        let layout  = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.register(EmojiCell.self, forCellWithReuseIdentifier: self.cellID)
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        collectionView.backgroundColor = UIColor.white
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.allowsMultipleSelection = false
-
-        return collectionView
-    }()
+//    lazy var emojiCollectionView: UICollectionView = {
+//        let layout  = UICollectionViewFlowLayout()
+//        layout.scrollDirection = .horizontal
+//        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+//        collectionView.register(EmojiCell.self, forCellWithReuseIdentifier: self.cellID)
+//        collectionView.delegate = self
+//        collectionView.dataSource = self
+//        collectionView.backgroundColor = UIColor.white
+//        collectionView.translatesAutoresizingMaskIntoConstraints = false
+//        collectionView.allowsMultipleSelection = false
+//
+//        return collectionView
+//    }()
     
-    var selectedEmoji = IndexPath()
-    var afterRunFeelingOptions = AfterRunFeeling()
-    private let cellID = "cellID"
+//    var selectedEmoji = IndexPath()
+//    var afterRunFeelingOptions = AfterRunFeeling()
+//    private let cellID = "cellID"
     
     // Stats views
     lazy var statsContainerView: CompleteRunStatsContainerView = {
@@ -164,8 +165,8 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
         view.addSubview(bgImageView)
         
         setupTitleView()
-        setupSubtitleView()
-        setupInputFeelingView()
+//        setupSubtitleView()
+//        setupInputFeelingView()
         setupStatsContainerView()
         setupSaveButton()
         setupResumeButton()
@@ -192,35 +193,35 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
         titleLabel.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1/9).isActive = true
     }
     
-    func setupSubtitleView() {
-        
-        view.addSubview(subtitleLabel)
-        
-        // x, y, width, height constraints
-        subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor).isActive = true
-        subtitleLabel.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        subtitleLabel.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1/9).isActive = true
-    }
+//    func setupSubtitleView() {
+//        
+//        view.addSubview(subtitleLabel)
+//        
+//        // x, y, width, height constraints
+//        subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+//        subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor).isActive = true
+//        subtitleLabel.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+//        subtitleLabel.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1/9).isActive = true
+//    }
     
-    func setupInputFeelingView() {
-        
-        view.addSubview(inputFeelingView)
-        
-        // x, y, width, height constraints
-        inputFeelingView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        inputFeelingView.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor).isActive = true
-        inputFeelingView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        inputFeelingView.heightAnchor.constraint(equalToConstant: 90).isActive = true
-        
-        inputFeelingView.addSubview(emojiCollectionView)
-
-        // x, y, width, height constraints
-        emojiCollectionView.centerXAnchor.constraint(equalTo: inputFeelingView.centerXAnchor).isActive = true
-        emojiCollectionView.centerYAnchor.constraint(equalTo: inputFeelingView.centerYAnchor).isActive = true
-        emojiCollectionView.widthAnchor.constraint(equalTo: inputFeelingView.widthAnchor).isActive = true
-        emojiCollectionView.heightAnchor.constraint(equalTo: inputFeelingView.heightAnchor, constant: -20).isActive = true
-    }
+//    func setupInputFeelingView() {
+//        
+//        view.addSubview(inputFeelingView)
+//        
+//        // x, y, width, height constraints
+//        inputFeelingView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+//        inputFeelingView.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor).isActive = true
+//        inputFeelingView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+//        inputFeelingView.heightAnchor.constraint(equalToConstant: 90).isActive = true
+//        
+//        inputFeelingView.addSubview(emojiCollectionView)
+//
+//        // x, y, width, height constraints
+//        emojiCollectionView.centerXAnchor.constraint(equalTo: inputFeelingView.centerXAnchor).isActive = true
+//        emojiCollectionView.centerYAnchor.constraint(equalTo: inputFeelingView.centerYAnchor).isActive = true
+//        emojiCollectionView.widthAnchor.constraint(equalTo: inputFeelingView.widthAnchor).isActive = true
+//        emojiCollectionView.heightAnchor.constraint(equalTo: inputFeelingView.heightAnchor, constant: -20).isActive = true
+//    }
     
     func setupStatsContainerView() {
         
@@ -228,10 +229,13 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
         
         // x, y, width, height constraints
         statsContainerView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        statsContainerView.topAnchor.constraint(equalTo: inputFeelingView.bottomAnchor, constant: 10).isActive = true
+        statsContainerView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10).isActive = true
         statsContainerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         statsContainerView.heightAnchor.constraint(equalToConstant: 80).isActive = true
     }
+    
+    // TODO: add map view here
+    
     
     func setupSaveButton() {
         
@@ -317,90 +321,90 @@ class FinishRunViewController: UIViewController, UICollectionViewDelegate, UICol
     }
     
     //MARK: CollectionView Delegate and DataSource
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-
-        return afterRunFeelingOptions.numberOfEmojis
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellID, for: indexPath) as! EmojiCell
-        cell.emoji = afterRunFeelingOptions.getEmojiImage(with: String(indexPath.row))
-        cell.emojiView.alpha = 0.3
-
-        if indexPath == selectedEmoji {
-            cell.emojiView.alpha = 1
-        }
-
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: emojiCollectionView.frame.height, height: emojiCollectionView.frame.height)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 14)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        if let cell = collectionView.cellForItem(at: indexPath) as? EmojiCell {
-            selectedEmoji = indexPath
-            cell.emojiView.alpha = 1
-            animateView(view: cell.emojiView)
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        
-        if let cell = collectionView.cellForItem(at: selectedEmoji) as? EmojiCell {
-            cell.emojiView.alpha = 0.3
-        }
-    }
-    
-    func animateView(view: UIView) {
-        
-        UIView.animate(withDuration: 0.05, animations: {
-            
-            view.transform = .init(scaleX: 0.8, y: 0.8)
-        }) { _ in
-            
-            UIView.animate(withDuration: 0.05) {
-                view.transform = .identity
-            }
-        }
-    }
+//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+//
+//        return afterRunFeelingOptions.numberOfEmojis
+//    }
+//    
+//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+//        
+//        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellID, for: indexPath) as! EmojiCell
+//        cell.emoji = afterRunFeelingOptions.getEmojiImage(with: String(indexPath.row))
+//        cell.emojiView.alpha = 0.3
+//
+//        if indexPath == selectedEmoji {
+//            cell.emojiView.alpha = 1
+//        }
+//
+//        return cell
+//    }
+//    
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+//        return CGSize(width: emojiCollectionView.frame.height, height: emojiCollectionView.frame.height)
+//    }
+//    
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+//        return UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 14)
+//    }
+//    
+//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+//        
+//        if let cell = collectionView.cellForItem(at: indexPath) as? EmojiCell {
+//            selectedEmoji = indexPath
+//            cell.emojiView.alpha = 1
+//            animateView(view: cell.emojiView)
+//        }
+//    }
+//    
+//    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+//        
+//        if let cell = collectionView.cellForItem(at: selectedEmoji) as? EmojiCell {
+//            cell.emojiView.alpha = 0.3
+//        }
+//    }
+//
+//    func animateView(view: UIView) {
+//        
+//        UIView.animate(withDuration: 0.05, animations: {
+//            
+//            view.transform = .init(scaleX: 0.8, y: 0.8)
+//        }) { _ in
+//            
+//            UIView.animate(withDuration: 0.05) {
+//                view.transform = .identity
+//            }
+//        }
+//    }
 }
-
-class EmojiCell: UICollectionViewCell {
-    
-    let emojiView: UIImageView = {
-        let iv = UIImageView()
-        iv.contentMode = .scaleAspectFill
-        return iv
-    }()
-    
-    var emoji: UIImage? {
-        didSet {
-            if let image = emoji {
-                emojiView.image = image
-            }
-        }
-    }
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        setupViews()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func setupViews() {
-        addSubview(emojiView)
-        emojiView.frame = CGRect(x: 0, y: 0, width: frame.width, height: frame.width)
-    }
-}
+//
+//class EmojiCell: UICollectionViewCell {
+//    
+//    let emojiView: UIImageView = {
+//        let iv = UIImageView()
+//        iv.contentMode = .scaleAspectFill
+//        return iv
+//    }()
+//    
+//    var emoji: UIImage? {
+//        didSet {
+//            if let image = emoji {
+//                emojiView.image = image
+//            }
+//        }
+//    }
+//    
+//    override init(frame: CGRect) {
+//        super.init(frame: frame)
+//        
+//        setupViews()
+//    }
+//    
+//    required init?(coder aDecoder: NSCoder) {
+//        fatalError("init(coder:) has not been implemented")
+//    }
+//    
+//    func setupViews() {
+//        addSubview(emojiView)
+//        emojiView.frame = CGRect(x: 0, y: 0, width: frame.width, height: frame.width)
+//    }
+//}

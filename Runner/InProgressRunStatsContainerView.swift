@@ -159,7 +159,7 @@ class InProgressRunStatsContainerView: UIView, ChartViewDelegate {
         return view
     }()
     
-    lazy var graphView: BarChartView = {
+    lazy var paceGraphView: BarChartView = {
         let view = BarChartView()
         
         view.delegate = self
@@ -182,16 +182,54 @@ class InProgressRunStatsContainerView: UIView, ChartViewDelegate {
         // set left axis minimun value to Zero (to be static)
         view.leftAxis.axisMinimum = 0
         
+        view.dragEnabled = false
+        view.pinchZoomEnabled = false
+        
         // Number formatting for YAxis
         //        view.leftAxis.valueFormatter = YAxisValueFormatter()
         
         // set no data text placeholder
-        view.noDataText = "Run your first km to display splits data"
-        view.noDataFont = UIFont(name: "AvenirNext-Regular", size: 14)
+        view.noDataText = "   Run your first km\nto display splits data"
+        view.noDataFont = UIFont(name: "AvenirNext-Regular", size: 11)
         view.noDataTextColor = UIColor(r: 32, g: 32, b: 32)
         
-        // hide main descriptions
-        view.legend.enabled = false
+        view.legend.enabled = true
+        view.chartDescription?.enabled = false
+        
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    lazy var elevationView: LineChartView = {
+        let view = LineChartView()
+        
+        view.delegate = self
+        
+        // hide grid lines
+        view.leftAxis.drawGridLinesEnabled = false
+        view.rightAxis.drawGridLinesEnabled = false
+        view.xAxis.drawGridLinesEnabled = false
+        
+        // hide axis lines
+        view.xAxis.drawAxisLineEnabled = false
+        view.leftAxis.drawAxisLineEnabled = false
+        view.rightAxis.drawAxisLineEnabled = true
+        
+        // hide labels on axis
+        view.xAxis.drawLabelsEnabled = false
+        view.leftAxis.drawLabelsEnabled = false
+        view.rightAxis.drawLabelsEnabled = true
+        
+        view.dragEnabled = false
+        view.pinchZoomEnabled = false
+
+        // set no data text placeholder
+        view.noDataText = "No altitude data\n  to display yet"
+        view.noDataFont = UIFont(name: "AvenirNext-Regular", size: 11)
+        view.noDataTextColor = UIColor(r: 32, g: 32, b: 32)
+        
+        
+        view.legend.enabled = true
         view.chartDescription?.enabled = false
         
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -213,7 +251,8 @@ class InProgressRunStatsContainerView: UIView, ChartViewDelegate {
         setupAvgPaceSeparatorView()
         setupCalView()
         setupCalSeparatorView()
-        setupGraphView()
+        setupPaceGraphView()
+        setupElevationGraphView()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -416,14 +455,25 @@ class InProgressRunStatsContainerView: UIView, ChartViewDelegate {
         self.bringSubview(toFront: calSeparatorView)
     }
     
-    func setupGraphView() {
+    func setupPaceGraphView() {
         
-        self.addSubview(graphView)
+        self.addSubview(paceGraphView)
 
         // x, y, width, height constraints
-        graphView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
-        graphView.topAnchor.constraint(equalTo: calView.bottomAnchor, constant: 10).isActive = true
-        graphView.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true
-        graphView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+        paceGraphView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
+        paceGraphView.topAnchor.constraint(equalTo: calView.bottomAnchor, constant: 10).isActive = true
+        paceGraphView.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1/2).isActive = true
+        paceGraphView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+    }
+    
+    func setupElevationGraphView() {
+        
+        self.addSubview(elevationView)
+        
+        // x, y, width, height constraints
+        elevationView.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
+        elevationView.topAnchor.constraint(equalTo: calView.bottomAnchor, constant: 10).isActive = true
+        elevationView.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1/2).isActive = true
+        elevationView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
     }
 }

@@ -14,7 +14,7 @@ import Charts
 class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProtocol {
     
     var newRun: Run = {
-        var run = Run(id: nil, type: RunType.run, timestamp: nil, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], calories: 0, feeling: nil, user: nil)
+        var run = Run(id: nil, type: RunType.run, timestamp: nil, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], elevations: [], calories: 0, feeling: nil, user: nil)
         
         return run
     }()
@@ -35,6 +35,9 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
     // For building the pace graph
     var lastRanKM = 0
     
+    // For building the altitude graph
+    var last50m = 0
+    
     var timer: Timer?
     lazy var locations = [CLLocation]()
     
@@ -53,16 +56,9 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
     
     lazy var resumePauseButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("GO", for: .normal)
+        button.setBackgroundImage(UIImage(named: "ResumeButton4"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitleColor(UIColor.white, for: .normal)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 24)
-        button.backgroundColor = UIColor.red
-        button.layer.cornerRadius = 35
-        button.layer.masksToBounds = true
-        
         button.addTarget(self, action: #selector(startPauseButtonPressed), for: .touchUpInside)
-        
         return button
     }()
     
@@ -70,12 +66,8 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
 
     lazy var finishRunButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Finish", for: .normal)
-        button.setTitleColor(UIColor.red, for: .normal)
-        button.tintColor = UIColor(r: 0, g: 128, b: 255)
-        button.setImage(UIImage(named:"FinishRunButton"), for: .normal)
+        button.setBackgroundImage(UIImage(named:"FinishRunButton3"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
         button.isHidden = true
         button.addTarget(self, action: #selector(finishRunButtonPressed), for: .touchUpInside)
         
@@ -188,9 +180,7 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
         // Is going to enter in pause mode
         if timer != nil {
             
-            resumePauseButton.setImage(UIImage(named:"ResumeButton"), for: .normal)
-            resumePauseButton.tintColor = UIColor(r: 0, g: 128, b: 255)
-            
+            resumePauseButton.setBackgroundImage(UIImage(named:"ResumeButton4"), for: .normal)
             resumePauseButtonHorizontalConstraint.constant = -45
             finishButtonHorizontalConstraint.constant = 45
             
@@ -243,7 +233,7 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
     
     func startingResumingRun() {
         
-        resumePauseButton.setImage(UIImage(named:"PauseButton"), for: .normal)
+        resumePauseButton.setBackgroundImage(UIImage(named:"PauseButton2"), for: .normal)
         resumePauseButton.tintColor = UIColor(r: 0, g: 128, b: 255)
         
         resumePauseButtonHorizontalConstraint.constant = 0
@@ -329,15 +319,43 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
                 newRun.pacesBySegment.append(newRun.duration - newRun.pacesBySegment.reduce(0, +))    // grab the duration for the last segment (km)
             }
             
-            // Display the graph
-            self.updateChartWithData()
+            // Display graphs
+            self.updatePaceChart()
             
             self.lastRanKM = kmInt
+        }
+        
+        // Build the elevation graph. Add an elevation entry data every 100m of run
+        let last50m = newRun.totalRunDistance / 100 % 100
+        
+        guard let altitudeRawValue = locations.last?.altitude else { return }
+        
+        let altitude = Int(altitudeRawValue)
+        
+        let randomNum = arc4random_uniform(UInt32(10)) + 100 // range is 0 to index of last item in array
+        let randomInt = Int(randomNum)
+        
+        if newRun.elevations.count == 0 {
+            
+            newRun.elevations.append(randomInt)   // altitude when start runing
+            
+            // Update graph
+            self.updateElevationChart()
+        }
+        
+        if last50m != self.last50m {
+            
+                newRun.elevations.append(randomInt)   // altitude of each 50 m
+            
+            // Update graph
+            self.updateElevationChart()
+            
+            self.last50m = last50m
         }
     }
     
     // Bar chart for pace of each segment
-    func updateChartWithData() {
+    func updatePaceChart() {
         
         var dataEntries = [BarChartDataEntry]()
         for i in 0..<newRun.pacesBySegment.count {
@@ -350,8 +368,8 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
         let valueFormatter = ChartValueFormatter()
         chartData.setValueFormatter(valueFormatter)
         
-        // Setup font for values. Show values only if ran 10 km or less (to avoid clashing value strings)
-        if newRun.pacesBySegment.count <= 10 {
+        // Setup font for values. Show values only if ran 5 km or less (to avoid clashing value strings)
+        if newRun.pacesBySegment.count <= 5 {
             
             chartData.setValueFont(UIFont(name: "AvenirNext-Regular", size: 11))
             chartData.setValueTextColor(UIColor(r: 32, g: 32, b: 32))
@@ -366,10 +384,53 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
             chartData.barWidth = chartData.barWidth / 2
         }
         
-        statsContainer.graphView.data = chartData
+        statsContainer.paceGraphView.data = chartData
         
         // animate bars
-        statsContainer.graphView.animate(yAxisDuration: 1.0, easingOption: .easeInOutExpo)
+        statsContainer.paceGraphView.animate(yAxisDuration: 1.0, easingOption: .easeInOutExpo)
+    }
+    
+    // Line chart for elevations
+    func updateElevationChart() {
+        
+        var dataEntries = [ChartDataEntry]()
+        for i in 0..<newRun.elevations.count {
+            let dataEntry = ChartDataEntry(x: Double(i), y: Double(newRun.elevations[i]))
+            dataEntries.append(dataEntry)
+        }
+        
+        let chartDataSet: LineChartDataSet
+        
+        if let datSetCount = statsContainer.elevationView.data?.dataSetCount {
+            
+            if datSetCount > 0 {
+                
+                chartDataSet = statsContainer.elevationView.data?.dataSets[0] as! LineChartDataSet
+                chartDataSet.values = dataEntries
+                statsContainer.elevationView.data?.notifyDataChanged()
+                statsContainer.elevationView.notifyDataSetChanged()
+            }
+        }
+        else {
+            
+            chartDataSet = LineChartDataSet(values: dataEntries, label: "Altitude")
+            chartDataSet.mode = .cubicBezier
+            chartDataSet.cubicIntensity = 0.2
+            chartDataSet.drawCirclesEnabled = false
+            chartDataSet.lineWidth = 1.0
+            chartDataSet.setColor(UIColor(r: 153, g: 255, b: 204))
+            chartDataSet.fillColor = UIColor(r: 153, g: 255, b: 204)
+            chartDataSet.fillAlpha = 1.0
+            chartDataSet.drawHorizontalHighlightIndicatorEnabled = false
+            chartDataSet.drawFilledEnabled = true
+            
+            let data = LineChartData(dataSet: chartDataSet)
+            data.setDrawValues(false)
+            statsContainer.elevationView.data = data
+        }
+        
+        // animate bars
+//        statsContainer.elevationView.animate(yAxisDuration: 1.0, easingOption: .easeInOutExpo)
     }
     
     func finishRunButtonPressed() {

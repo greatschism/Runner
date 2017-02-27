@@ -25,7 +25,7 @@ class SyncManager {
             
             if let runDictionary = snapshot.value as? [String: Any] {
                 
-                var foundRun = Run(id: nil, type: RunType.run, timestamp: 0, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], calories: 0, feeling: nil, user: nil)
+                var foundRun = Run(id: nil, type: RunType.run, timestamp: 0, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], elevations: [], calories: 0, feeling: nil, user: nil)
                 
                 if let runDuration = runDictionary["duration"] as? Int,
                     let runDistance = runDictionary["totalRunDistance"] as? Int,

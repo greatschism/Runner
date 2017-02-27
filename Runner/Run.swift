@@ -22,6 +22,7 @@ struct Run {
     var totalDistanceInPause: Int
     var pace: Double                // pace value as a Double
     var pacesBySegment: [Int]       // each item is the pace value for a segment(split) of 1 km run
+    var elevations: [Int]           // each item is the elevation value for every 50m run
     var calories: Int
     var feeling: String?
     var user: User?
