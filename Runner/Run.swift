@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreLocation
 
 enum RunType {
     case walk, run, longrun, race
@@ -15,7 +16,8 @@ enum RunType {
 struct Run {
 
     var id: String?
-    var type: RunType?
+//    var type: RunType?
+    var name: String?
     var timestamp: Int?
     var duration: Int
     var totalRunDistance: Int       // total distance actually ran, considering (minus) all distance in paused mode (this is the one displayed on screen)
@@ -24,6 +26,7 @@ struct Run {
     var pacesBySegment: [Int]       // each item is the pace value for a segment(split) of 1 km run
     var elevations: [Int]           // each item is the elevation value for every 50m run
     var calories: Int
-    var feeling: String?
+    var locations: [CLLocation]?    //each item = timestamp : [latitude, longitude]
+    var imageURL: String?
     var user: User?
 }

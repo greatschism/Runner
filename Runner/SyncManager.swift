@@ -21,25 +21,27 @@ class SyncManager {
         
         FIRDatabase.database().reference().child("runs").observe(.childAdded, with: { (snapshot) in
             
-            print("[SYNC MANAGER] about to get in \(#function) an item added on Database: \(snapshot)")
+            print("[SYNC MANAGER] about to get in \(#function) the item added on Database: \(snapshot)")
             
             if let runDictionary = snapshot.value as? [String: Any] {
                 
-                var foundRun = Run(id: nil, type: RunType.run, timestamp: 0, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], elevations: [], calories: 0, feeling: nil, user: nil)
+                var foundRun = Run(id: nil, name: nil, timestamp: 0, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], elevations: [], calories: 0, locations: nil, imageURL: nil, user: nil)
                 
-                if let runDuration = runDictionary["duration"] as? Int,
+                if let runName = runDictionary["name"] as? String, let runDuration = runDictionary["duration"] as? Int,
                     let runDistance = runDictionary["totalRunDistance"] as? Int,
-                    let runPace = runDictionary["pace"] as? Double, let userID = runDictionary["userID"] as? String, let startingTime = runDictionary["timestamp"] as? Int {
+                    let runPace = runDictionary["pace"] as? Double, let userID = runDictionary["userID"] as? String, let startingTime = runDictionary["timestamp"] as? Int, let imageURL = runDictionary["imageURL"] as? String {
                     
                     let user = User()
                     user.id = userID
                     
                     foundRun.id = snapshot.key
                     foundRun.user = user
+                    foundRun.name = runName
                     foundRun.duration = runDuration
                     foundRun.totalRunDistance = runDistance
                     foundRun.pace = runPace
                     foundRun.timestamp = startingTime
+                    foundRun.imageURL = imageURL
                     
                     self.indexKeys.insert(snapshot.key, at: 0)
                     
@@ -53,7 +55,7 @@ class SyncManager {
         
         FIRDatabase.database().reference().child("runs").observe(.childRemoved, with: { (snapshot) in
             
-            print("[SYNC MANAGER] about to get in \(#function) an item removed on Database: \(snapshot)")
+            print("[SYNC MANAGER] about to get in \(#function) the item removed on Database: \(snapshot)")
             
             guard let removedIndex = self.removeIndex(of: snapshot.key) else { return }
             

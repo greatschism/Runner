@@ -298,7 +298,6 @@ class LoginViewController: UIViewController {
             // Successfully authenticated user
             guard let uid = user?.uid else { return }
             
-//            let firebaseRef = FIRDatabase.database().reference(fromURL: "https://runner-23510.firebaseio.com/")
             let firebaseRef = FIRDatabase.database().reference()
 
             let usersReference = firebaseRef.child("users").child(uid)

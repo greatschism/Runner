@@ -11,8 +11,8 @@ import UIKit
 class CompleteRunStatsContainerView: UIView {
 
     // Fonts
-    let titleFont = UIFont(name: "DINAlternate-bold", size: 16)
-    let titleTextColor = UIColor(r: 0, g: 128, b: 255)
+    let titleFont = UIFont(name: "AvenirNext-Regular", size: 14)
+    let titleTextColor = UIColor(r: 32, g: 32, b: 32)
     
     let valueFont = UIFont(name: "DINAlternate-bold", size: 24)
     let valueTextColor = UIColor(r: 64, g: 64, b: 64)

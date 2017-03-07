@@ -11,28 +11,31 @@ import Charts
 
 class InProgressRunStatsContainerView: UIView, ChartViewDelegate {
     
+    let titleColor = UIColor(r: 32, g: 32, b: 32)
+    let numbersColor = UIColor(r: 64, g: 64, b: 64)
+    
     let durationView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
-    let durationTitle: UILabel = {
+    lazy var durationTitle: UILabel = {
         let label = UILabel()
         label.text = "TIME"
-        label.textColor = UIColor(r: 32, g: 32, b: 32)
+        label.textColor = self.titleColor
         label.textAlignment = .center
         label.font = UIFont(name: "AvenirNext-Regular", size: 11)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    let durationLabel: UILabel = {
+    lazy var durationLabel: UILabel = {
         let label = UILabel()
         label.text = "00:00:00"
         label.textAlignment = .center
         label.numberOfLines = 0
-        label.textColor = UIColor(r: 64, g: 64, b: 64)
+        label.textColor = self.numbersColor
         label.font = UIFont(name: "DINAlternate-bold", size: 80)
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.5
@@ -54,9 +57,9 @@ class InProgressRunStatsContainerView: UIView, ChartViewDelegate {
         return view
     }()
     
-    let distanceTitle: UILabel = {
+    lazy var distanceTitle: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(r: 32, g: 32, b: 32)
+        label.textColor = self.titleColor
         label.text = "DISTANCE (km)"
         label.textAlignment = .center
         label.font = UIFont(name: "AvenirNext-Regular", size: 11)
@@ -64,9 +67,9 @@ class InProgressRunStatsContainerView: UIView, ChartViewDelegate {
         return label
     }()
     
-    let distanceLabel: UILabel = {
+    lazy var distanceLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(r: 64, g: 64, b: 64)
+        label.textColor = self.numbersColor
         label.text = "0.00"
         label.textAlignment = .center
         label.numberOfLines = 1
@@ -91,9 +94,9 @@ class InProgressRunStatsContainerView: UIView, ChartViewDelegate {
         return view
     }()
     
-    let avgPaceTitle: UILabel = {
+    lazy var avgPaceTitle: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(r: 32, g: 32, b: 32)
+        label.textColor = self.titleColor
         label.text = "AVG PACE (/km)"
         label.textAlignment = .center
         label.font = UIFont(name: "AvenirNext-Regular", size: 11)
@@ -101,9 +104,9 @@ class InProgressRunStatsContainerView: UIView, ChartViewDelegate {
         return label
     }()
     
-    let avgPaceLabel: UILabel = {
+    lazy var avgPaceLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(r: 64, g: 64, b: 64)
+        label.textColor = self.numbersColor
         label.text = "00:00"
         label.textAlignment = .center
         label.numberOfLines = 1
@@ -128,9 +131,9 @@ class InProgressRunStatsContainerView: UIView, ChartViewDelegate {
         return view
     }()
     
-    let calTitle: UILabel = {
+    lazy var calTitle: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(r: 32, g: 32, b: 32)
+        label.textColor = self.titleColor
         label.text = "BURN (kCal)"
         label.textAlignment = .center
         label.font = UIFont(name: "AvenirNext-Regular", size: 11)
@@ -138,9 +141,9 @@ class InProgressRunStatsContainerView: UIView, ChartViewDelegate {
         return label
     }()
     
-    let calLabel: UILabel = {
+    lazy var calLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(r: 64, g: 64, b: 64)
+        label.textColor = self.numbersColor
         label.text = "000"
         label.textAlignment = .center
         label.numberOfLines = 1
@@ -191,9 +194,11 @@ class InProgressRunStatsContainerView: UIView, ChartViewDelegate {
         // set no data text placeholder
         view.noDataText = "   Run your first km\nto display splits data"
         view.noDataFont = UIFont(name: "AvenirNext-Regular", size: 11)
-        view.noDataTextColor = UIColor(r: 32, g: 32, b: 32)
+        view.noDataTextColor = self.numbersColor
         
         view.legend.enabled = true
+        view.legend.textColor = self.numbersColor
+        
         view.chartDescription?.enabled = false
         
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -218,7 +223,12 @@ class InProgressRunStatsContainerView: UIView, ChartViewDelegate {
         // hide labels on axis
         view.xAxis.drawLabelsEnabled = false
         view.leftAxis.drawLabelsEnabled = false
+        
         view.rightAxis.drawLabelsEnabled = true
+        view.rightAxis.labelTextColor = self.numbersColor
+        
+        view.leftAxis.axisMinimum = 0
+        view.rightAxis.axisMinimum = 0
         
         view.dragEnabled = false
         view.pinchZoomEnabled = false
@@ -226,10 +236,11 @@ class InProgressRunStatsContainerView: UIView, ChartViewDelegate {
         // set no data text placeholder
         view.noDataText = "No altitude data\n  to display yet"
         view.noDataFont = UIFont(name: "AvenirNext-Regular", size: 11)
-        view.noDataTextColor = UIColor(r: 32, g: 32, b: 32)
-        
+        view.noDataTextColor = self.numbersColor
         
         view.legend.enabled = true
+        view.legend.textColor = self.numbersColor
+        
         view.chartDescription?.enabled = false
         
         view.translatesAutoresizingMaskIntoConstraints = false

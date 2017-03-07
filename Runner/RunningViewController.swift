@@ -10,12 +10,12 @@ import UIKit
 import CoreLocation
 import HealthKit
 import Charts
+import MapKit
 
 class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProtocol {
     
     var newRun: Run = {
-        var run = Run(id: nil, type: RunType.run, timestamp: nil, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], elevations: [], calories: 0, feeling: nil, user: nil)
-        
+        var run = Run(id: nil, name: nil, timestamp: nil, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], elevations: [], calories: 0, locations: nil, imageURL: nil, user: nil)
         return run
     }()
     
@@ -36,7 +36,7 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
     var lastRanKM = 0
     
     // For building the altitude graph
-    var last50m = 0
+    var last100m = 0
     
     var timer: Timer?
     lazy var locations = [CLLocation]()
@@ -78,15 +78,39 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
     
     lazy var closeButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Close", for: .normal)
-        button.setTitleColor(UIColor.red, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 24)
+//        button.setBackgroundImage(UIImage(named: "BackButton"), for: .normal)
+        button.setTitle("Cancel", for: .normal)
+        button.tintColor = .red
+        button.layer.cornerRadius = 20
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.red.cgColor
         button.isHidden = false
         button.addTarget(self, action: #selector(closeButtonPressed), for: .touchUpInside)
         
         return button
     }()
+    
+    lazy var mapview: MKMapView = {
+        let map = MKMapView()
+        map.mapType = .standard
+        map.delegate = self
+        map.showsUserLocation = true
+        map.translatesAutoresizingMaskIntoConstraints = false
+        return map
+    }()
+    
+    var mapviewHorizontalConstraint = NSLayoutConstraint() // need property for animation
+
+    lazy var toggleMapButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setBackgroundImage(UIImage(named: "mapButtonDeselected"), for: .normal)
+        button.addTarget(self, action: #selector(toggleMapButtonPressed), for: .touchUpInside)
+        return button
+    }()
+    
+    var toggleMapButtonOn = false
     
     lazy var bgImageView: UIImageView = {
         let imageView = UIImageView()
@@ -104,19 +128,28 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
     
         navigationController?.isNavigationBarHidden = true
         view.backgroundColor = UIColor.white
-        
-        view.addSubview(bgImageView)
+//        view.backgroundColor = UIColor(r: 40, g: 43, b: 53)
+
+//        view.addSubview(bgImageView)
         
         view.addSubview(statsContainer)
         view.addSubview(finishRunButton)
         view.addSubview(resumePauseButton)
         view.addSubview(closeButton)
+        view.addSubview(mapview)
+        view.addSubview(toggleMapButton)
         
         setupMainView()
         setupStartPauseButton()
         setupFinishRunButton()
         setupCloseButton()
+        setupMapView()
+        setupToggleMapButton()
     }
+    
+//    override var preferredStatusBarStyle: UIStatusBarStyle {
+//        return .lightContent
+//    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -154,10 +187,29 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
 
     func setupCloseButton() {
         // x, y, width, height constraints
-        closeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -view.frame.width/4).isActive = true
-        closeButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10).isActive = true
+        closeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -view.frame.width/3).isActive = true
+        closeButton.centerYAnchor.constraint(equalTo: resumePauseButton.centerYAnchor).isActive = true
         closeButton.widthAnchor.constraint(equalToConstant: 70).isActive = true
-        closeButton.heightAnchor.constraint(equalToConstant: 70).isActive = true
+        closeButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+    }
+    
+    func setupMapView() {
+        
+        // x, y, width, height constraints
+        mapviewHorizontalConstraint = mapview.leftAnchor.constraint(equalTo: view.rightAnchor)
+        mapviewHorizontalConstraint.isActive = true
+        mapview.topAnchor.constraint(equalTo: statsContainer.distanceView.topAnchor).isActive = true
+        mapview.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        mapview.bottomAnchor.constraint(equalTo: statsContainer.bottomAnchor).isActive = true
+    }
+    
+    func setupToggleMapButton() {
+        
+        // x, y, width, height constraints
+        toggleMapButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: view.frame.width/3).isActive = true
+        toggleMapButton.centerYAnchor.constraint(equalTo: resumePauseButton.centerYAnchor).isActive = true
+        toggleMapButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        toggleMapButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
     
     // MARK: - Running Updates and Calculations
@@ -177,9 +229,9 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
         resumePauseButton.layer.cornerRadius = 0
         resumePauseButton.layer.masksToBounds = true
 
-        // Is going to enter in pause mode
         if timer != nil {
             
+            // Is going to enter in pause mode
             resumePauseButton.setBackgroundImage(UIImage(named:"ResumeButton4"), for: .normal)
             resumePauseButtonHorizontalConstraint.constant = -45
             finishButtonHorizontalConstraint.constant = 45
@@ -196,20 +248,22 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
             isPaused = true
             distanceWhenPaused = distance
         }
-        // Pressed the button for the first time (Start), so present the Counter View Controller
         else {
          
             if newRun.timestamp == nil {
                 
+                // Pressed the button for the first time (Start), so hide the close button
                 closeButton.isHidden = true
-                
                 newRun.timestamp = Int(NSDate().timeIntervalSince1970)
                 
-                counterVC.delegate = self
-                counterVC.modalTransitionStyle = .crossDissolve
-                present(counterVC, animated: true, completion: nil)
+//                counterVC.delegate = self
+//                counterVC.modalTransitionStyle = .crossDissolve
+//                present(counterVC, animated: true, completion: nil)
+                
+                startingResumingRun()
             }
             else {
+                // Is going to resume run
                 startingResumingRun()
             }
         }
@@ -252,8 +306,6 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
         }
         
         startLocationUpdates()
-        locations.removeAll(keepingCapacity: false)
-        
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(eachSecond), userInfo: nil, repeats: true)
     }
     
@@ -326,13 +378,13 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
         }
         
         // Build the elevation graph. Add an elevation entry data every 100m of run
-        let last50m = newRun.totalRunDistance / 100 % 100
+        let last100m = newRun.totalRunDistance / 100 % 100
         
         guard let altitudeRawValue = locations.last?.altitude else { return }
         
         let altitude = Int(altitudeRawValue)
         
-        let randomNum = arc4random_uniform(UInt32(10)) + 100 // range is 0 to index of last item in array
+        let randomNum = arc4random_uniform(UInt32(10)) + 50 // TODO: remove random number
         let randomInt = Int(randomNum)
         
         if newRun.elevations.count == 0 {
@@ -340,17 +392,17 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
             newRun.elevations.append(randomInt)   // altitude when start runing
             
             // Update graph
-            self.updateElevationChart()
+//            self.updateElevationChart()
         }
         
-        if last50m != self.last50m {
+        if last100m != self.last100m {
             
                 newRun.elevations.append(randomInt)   // altitude of each 50 m
             
             // Update graph
             self.updateElevationChart()
             
-            self.last50m = last50m
+            self.last100m = last100m
         }
     }
     
@@ -372,7 +424,8 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
         if newRun.pacesBySegment.count <= 5 {
             
             chartData.setValueFont(UIFont(name: "AvenirNext-Regular", size: 11))
-            chartData.setValueTextColor(UIColor(r: 32, g: 32, b: 32))
+//            chartData.setValueTextColor(UIColor(r: 32, g: 32, b: 32))
+            chartData.setValueTextColor(statsContainer.numbersColor)
         }
         else {
             
@@ -433,6 +486,30 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
 //        statsContainer.elevationView.animate(yAxisDuration: 1.0, easingOption: .easeInOutExpo)
     }
     
+    func toggleMapButtonPressed() {
+        
+        toggleMapButtonOn = !toggleMapButtonOn
+
+        if toggleMapButtonOn {
+            
+            toggleMapButton.setBackgroundImage(UIImage(named: "mapButtonSelected"), for: .normal)
+            mapviewHorizontalConstraint.isActive = false
+            mapviewHorizontalConstraint = mapview.leftAnchor.constraint(equalTo: view.leftAnchor)
+            mapviewHorizontalConstraint.isActive = true
+        }
+        else {
+            toggleMapButton.setBackgroundImage(UIImage(named: "mapButtonDeselected"), for: .normal)
+            mapviewHorizontalConstraint.isActive = false
+            mapviewHorizontalConstraint = mapview.leftAnchor.constraint(equalTo: view.rightAnchor)
+            mapviewHorizontalConstraint.isActive = true
+        }
+        
+        UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
+            
+            self.view.layoutIfNeeded()
+        })
+    }
+    
     func finishRunButtonPressed() {
         
         if currentUser != nil {
@@ -440,10 +517,13 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
             newRun.user = currentUser
         }
         
+        newRun.locations = locations
+        
         let finishRunViewController = FinishRunViewController()
         finishRunViewController.delegate = self
         finishRunViewController.newRun = self.newRun
-        present(finishRunViewController, animated: true, completion: nil)
+        let navController = UINavigationController(rootViewController: finishRunViewController)
+        present(navController, animated: true, completion: nil)
     }
     
     // MARK: - Finish Run Delegate
@@ -497,24 +577,57 @@ extension Double {
     }
 }
 
-// MARK: - CLLocationManagerDelegate
-extension RunningViewController: CLLocationManagerDelegate {
-    
+extension RunningViewController: CLLocationManagerDelegate, MKMapViewDelegate {
+
+    // MARK: - CLLocationManagerDelegate
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
         for location in locations {
             
-            if location.horizontalAccuracy < 20 {
+            let howRecent = location.timestamp.timeIntervalSinceNow
+
+            if abs(howRecent) < 10 && location.horizontalAccuracy < 15 {
                 
                 if let lastLocation = self.locations.last {
                     
                     //update distance
                     distance = distance + Int(location.distance(from: lastLocation))
+                    
+                    // update map
+                    var coordinates = [CLLocationCoordinate2D]()
+                    
+                    if let lastCoord = self.locations.last?.coordinate {
+                        
+                        coordinates.append(lastCoord)
+                        coordinates.append(location.coordinate)
+                        
+                        let region = MKCoordinateRegionMakeWithDistance(location.coordinate, 500, 500)
+                        mapview.setRegion(region, animated: true)
+                        
+                        mapview.add(MKPolyline(coordinates: &coordinates, count: coordinates.count))
+                    }
                 }
                 
                 //save location
                 self.locations.append(location)
             }
+            else {
+                print("[RUNNING VIEW CONTROLLER] location data is not recent or horizontal accuracy is too large.")
+            }
         }
+    }
+    
+    // MARK: - MKMapViewDelegate
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        
+        if overlay.isKind(of: MKPolyline.self){
+            
+            let polylineRenderer = MKPolylineRenderer(overlay: overlay)
+            polylineRenderer.strokeColor = UIColor(r: 0, g: 128, b: 255)
+            polylineRenderer.lineWidth = 10
+            polylineRenderer.lineCap = .round
+            return polylineRenderer
+        }
+        return MKOverlayRenderer(overlay: overlay)
     }
 }

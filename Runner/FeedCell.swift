@@ -31,11 +31,30 @@ class FeedCell: UICollectionViewCell {
         }
     }
     
+    var runImageView: UIImageView = {
+        
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        return imageView
+    }()
+    
     var usernameLabel: UILabel = {
         
         let label = UILabel()
         label.textColor = UIColor.black
         label.font = UIFont(name: "AvenirNext-Regular", size: 14)
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        return label
+    }()
+    
+    var runNameLabel: UILabel = {
+        
+        let label = UILabel()
+        label.textColor = UIColor(r: 64, g: 64, b: 64)
+        label.font = UIFont(name: "AvenirNext-Regular", size: 12)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -46,6 +65,7 @@ class FeedCell: UICollectionViewCell {
         label.textColor = UIColor(r: 64, g: 64, b: 64)
         label.font = UIFont(name: "AvenirNext-Regular", size: 12)
         label.translatesAutoresizingMaskIntoConstraints = false
+
         return label
     }()
     
@@ -93,13 +113,15 @@ class FeedCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+
+        addSubview(runImageView)
         addSubview(userProfileImageView)
+        addSubview(runTimeLabel)
         addSubview(usernameLabel)
+        addSubview(runNameLabel)
         addSubview(runDistanceLabel)
         addSubview(runDurationLabel)
         addSubview(runPaceLabel)
-        addSubview(runTimeLabel)
         
         setupViews()
     }
@@ -112,39 +134,51 @@ class FeedCell: UICollectionViewCell {
         
         // x, y, width, height constraints
         userProfileImageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10).isActive = true
-        userProfileImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 20).isActive = true
-        userProfileImageView.widthAnchor.constraint(equalTo: self.heightAnchor, multiplier: 1/2).isActive = true
-        userProfileImageView.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 1/2).isActive = true
+        userProfileImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 12).isActive = true
+        userProfileImageView.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        userProfileImageView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        // x, y, width, height constraints
+        runTimeLabel.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
+        runTimeLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
+        runTimeLabel.widthAnchor.constraint(equalToConstant: 130).isActive = true
+        runTimeLabel.heightAnchor.constraint(equalTo: runDistanceLabel.heightAnchor).isActive = true
         
         // x, y, width, height constraints
         usernameLabel.leftAnchor.constraint(equalTo: userProfileImageView.rightAnchor, constant: 10).isActive = true
         usernameLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
-        usernameLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -10).isActive = true
-        usernameLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        usernameLabel.rightAnchor.constraint(equalTo: runTimeLabel.leftAnchor, constant: -8).isActive = true
+        usernameLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
+
+        // x, y, width, height constraints
+        runNameLabel.leftAnchor.constraint(equalTo: usernameLabel.leftAnchor).isActive = true
+        runNameLabel.topAnchor.constraint(equalTo: usernameLabel.bottomAnchor, constant: 0).isActive = true
+        runNameLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -10).isActive = true
+        runNameLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
         // x, y, width, height constraints
         runDistanceLabel.leftAnchor.constraint(equalTo: usernameLabel.leftAnchor).isActive = true
-        runDistanceLabel.topAnchor.constraint(equalTo: usernameLabel.bottomAnchor, constant: 0).isActive = true
+        runDistanceLabel.topAnchor.constraint(equalTo: runNameLabel.bottomAnchor, constant: 0).isActive = true
         runDistanceLabel.widthAnchor.constraint(equalToConstant: 70).isActive = true
-        runDistanceLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        runDistanceLabel.heightAnchor.constraint(equalToConstant: 24).isActive = true
         
         // x, y, width, height constraints
-        runDurationLabel.leftAnchor.constraint(equalTo: runDistanceLabel.rightAnchor, constant: 20).isActive = true
+        runDurationLabel.leftAnchor.constraint(equalTo: runDistanceLabel.rightAnchor, constant: 0).isActive = true
         runDurationLabel.topAnchor.constraint(equalTo: runDistanceLabel.topAnchor).isActive = true
         runDurationLabel.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        runDurationLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        runDurationLabel.heightAnchor.constraint(equalToConstant: 24).isActive = true
         
         // x, y, width, height constraints
-        runPaceLabel.leftAnchor.constraint(equalTo: runDurationLabel.rightAnchor, constant: 20).isActive = true
+        runPaceLabel.leftAnchor.constraint(equalTo: runDurationLabel.rightAnchor, constant: 0).isActive = true
         runPaceLabel.topAnchor.constraint(equalTo: runDistanceLabel.topAnchor).isActive = true
         runPaceLabel.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        runPaceLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        runPaceLabel.heightAnchor.constraint(equalToConstant: 24).isActive = true
         
         // x, y, width, height constraints
-        runTimeLabel.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
-        runTimeLabel.centerYAnchor.constraint(equalTo: usernameLabel.centerYAnchor).isActive = true
-        runTimeLabel.widthAnchor.constraint(equalToConstant: 150).isActive = true
-        runTimeLabel.heightAnchor.constraint(equalTo: runDistanceLabel.heightAnchor).isActive = true
+        runImageView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
+        runImageView.topAnchor.constraint(equalTo: self.runPaceLabel.bottomAnchor, constant: 5).isActive = true
+        runImageView.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true
+        runImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
     }
     
     func configure(with run: Run) {
@@ -165,8 +199,9 @@ class FeedCell: UICollectionViewCell {
                 }
             }, withCancel: nil)
         }
-        
+        usernameLabel.text = run.user?.name
         profileImage = UIImage(named: "mario-run")
+        runNameLabel.text = run.name
         runDistanceLabel.text = RawValueFormatter().getDistanceString(with: run.totalRunDistance) + " km"
         runDurationLabel.text = RawValueFormatter().getDurationString(with: run.duration)
         runPaceLabel.text = RawValueFormatter().getPaceString(with: run.pace) + " /km"
@@ -178,6 +213,10 @@ class FeedCell: UICollectionViewCell {
             dateFormatter.dateStyle = .medium
             dateFormatter.timeStyle = .short
             runTimeLabel.text = dateFormatter.string(from: timestampDate)
+        }
+        
+        if let imageURL = run.imageURL {
+            runImageView.loadImageUsingCache(with: imageURL)
         }
     }
 }

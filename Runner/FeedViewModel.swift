@@ -23,7 +23,6 @@ class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegat
         super.init()
         
         collectionView = getCollectionView()
-        
         bind()
     }
     
@@ -127,10 +126,16 @@ class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegat
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.cellID, for: indexPath) as! FeedCell
         let run = runItems[indexPath.item]
         cell.configure(with: run)
+        
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: 86)
+        return CGSize(width: collectionView.frame.width, height: collectionView.frame.width * 0.8)
     }
+    
+    
+    // To delete a run item
+    
+    // syncManager.removeRunFromDataBase(with: runToDelete)
 }

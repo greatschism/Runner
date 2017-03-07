@@ -10,6 +10,7 @@
 		5738FEF13F2F50F7093F9371 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E823B3879A7395BC18FCA82 /* Pods_Runner.framework */; };
 		D021387C1E59A4CB00BB57DC /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = D021387B1E59A4CB00BB57DC /* User.swift */; };
 		D02138821E5AE11C00BB57DC /* FeedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02138811E5AE11C00BB57DC /* FeedCell.swift */; };
+		D0307DA71E6E1A260046C7B9 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0307DA61E6E1A260046C7B9 /* Extensions.swift */; };
 		D03124471E3EF11000C82B52 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D03124461E3EF11000C82B52 /* AppDelegate.swift */; };
 		D03124491E3EF11000C82B52 /* RunningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D03124481E3EF11000C82B52 /* RunningViewController.swift */; };
 		D031244C1E3EF11000C82B52 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D031244A1E3EF11000C82B52 /* Main.storyboard */; };
@@ -25,6 +26,7 @@
 		D07E7EE81E512B0C001E7A75 /* CompleteRunStatsContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D07E7EE71E512B0C001E7A75 /* CompleteRunStatsContainerView.swift */; };
 		D07E7EEA1E51A46A001E7A75 /* InProgressRunStatsContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D07E7EE91E51A46A001E7A75 /* InProgressRunStatsContainerView.swift */; };
 		D090A5F31E601D7600F88047 /* SyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D090A5F21E601D7600F88047 /* SyncManager.swift */; };
+		D090A5F61E63EE0A00F88047 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D090A5F51E63EE0A00F88047 /* MapKit.framework */; };
 		D0AA725B1E4BDE9F00089C24 /* FinishRunViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0AA725A1E4BDE9F00089C24 /* FinishRunViewController.swift */; };
 		D0AA725F1E4C0D9C00089C24 /* Run.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0AA725E1E4C0D9C00089C24 /* Run.swift */; };
 		D0DB66DD1E543B5800323A25 /* CounterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0DB66DC1E543B5800323A25 /* CounterViewController.swift */; };
@@ -38,6 +40,7 @@
 		0E823B3879A7395BC18FCA82 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D021387B1E59A4CB00BB57DC /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = User.swift; path = Runner/User.swift; sourceTree = SOURCE_ROOT; };
 		D02138811E5AE11C00BB57DC /* FeedCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedCell.swift; sourceTree = "<group>"; };
+		D0307DA61E6E1A260046C7B9 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Extensions.swift; path = Runner/Extensions.swift; sourceTree = SOURCE_ROOT; };
 		D03124431E3EF11000C82B52 /* Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Runner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D03124461E3EF11000C82B52 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D03124481E3EF11000C82B52 /* RunningViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningViewController.swift; sourceTree = "<group>"; };
@@ -56,6 +59,7 @@
 		D07E7EE71E512B0C001E7A75 /* CompleteRunStatsContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompleteRunStatsContainerView.swift; sourceTree = "<group>"; };
 		D07E7EE91E51A46A001E7A75 /* InProgressRunStatsContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InProgressRunStatsContainerView.swift; sourceTree = "<group>"; };
 		D090A5F21E601D7600F88047 /* SyncManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SyncManager.swift; path = Runner/SyncManager.swift; sourceTree = SOURCE_ROOT; };
+		D090A5F51E63EE0A00F88047 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		D0AA725A1E4BDE9F00089C24 /* FinishRunViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FinishRunViewController.swift; path = Runner/FinishRunViewController.swift; sourceTree = SOURCE_ROOT; };
 		D0AA725E1E4C0D9C00089C24 /* Run.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Run.swift; sourceTree = "<group>"; };
 		D0DB66DC1E543B5800323A25 /* CounterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CounterViewController.swift; path = Runner/CounterViewController.swift; sourceTree = SOURCE_ROOT; };
@@ -70,6 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D090A5F61E63EE0A00F88047 /* MapKit.framework in Frameworks */,
 				5738FEF13F2F50F7093F9371 /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -80,6 +85,7 @@
 		746965C3DC28AE2AD5CC2655 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D090A5F51E63EE0A00F88047 /* MapKit.framework */,
 				0E823B3879A7395BC18FCA82 /* Pods_Runner.framework */,
 			);
 			name = Frameworks;
@@ -92,6 +98,14 @@
 				E933CD6662C82A4C228703E0 /* Pods-Runner.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		D0307DA51E6E19A20046C7B9 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				D0307DA61E6E1A260046C7B9 /* Extensions.swift */,
+			);
+			name = Helpers;
 			sourceTree = "<group>";
 		};
 		D031243A1E3EF10F00C82B52 = {
@@ -120,6 +134,7 @@
 				D07A4FC21E44486F00EEEF0A /* Views */,
 				D07A4FC51E44489300EEEF0A /* View Models */,
 				D07A4FC41E44488B00EEEF0A /* Controllers */,
+				D0307DA51E6E19A20046C7B9 /* Helpers */,
 				D07A4FC61E4448E100EEEF0A /* UI */,
 				D07A4FC71E44490D00EEEF0A /* Assets */,
 				D0AA72601E4C235600089C24 /* Formatters */,
@@ -258,6 +273,9 @@
 							com.apple.BackgroundModes = {
 								enabled = 1;
 							};
+							com.apple.Maps.iOS = {
+								enabled = 1;
+							};
 						};
 					};
 				};
@@ -362,6 +380,7 @@
 				D0DB66DD1E543B5800323A25 /* CounterViewController.swift in Sources */,
 				D0F7153B1E593883007D9CD6 /* LoginViewController.swift in Sources */,
 				D05780451E49CA7400A69A23 /* ChartValueFormatter.swift in Sources */,
+				D0307DA71E6E1A260046C7B9 /* Extensions.swift in Sources */,
 				D07E7EE61E4F024A001E7A75 /* AfterRunFeeling.swift in Sources */,
 				D047A35B1E57CB9400B731E5 /* FeedViewModel.swift in Sources */,
 				D02138821E5AE11C00BB57DC /* FeedCell.swift in Sources */,

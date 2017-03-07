@@ -8,64 +8,55 @@
 
 import UIKit
 import Firebase
-import Charts
+import HealthKit
+import MapKit
 
 protocol FinishRunProtocol {
     
     func shouldDismiss()
 }
 
-class FinishRunViewController: UIViewController/*, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource*/ {
+class FinishRunViewController: UIViewController, MKMapViewDelegate, UITextFieldDelegate/*, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource*/ {
 
     var newRun: Run?
     
     var delegate: FinishRunProtocol?
     
-    let titleLabel: UILabel = {
+    lazy var navBarBottomPosition: CGFloat = {
+       var height = self.navigationController!.navigationBar.frame.size.height + UIApplication.shared.statusBarFrame.height
+        return height
+    }()
+    
+    let nameLabel: UILabel = {
+        
         let label = UILabel()
-        label.text = Motivation().title
+        label.text = "Name:"
         label.textColor = UIColor(r: 32, g: 32, b: 32)
-        label.textAlignment = .center
-        label.font = UIFont(name: "DINAlternate-bold", size: 50)
+        label.font = UIFont(name: "DINAlternate-bold", size: 18)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-//    let subtitleLabel: UILabel = {
-//        let label = UILabel()
-//        label.text = Motivation().phrase
-//        label.numberOfLines = 0
-//        label.textColor = UIColor(r: 32, g: 32, b: 32)
-//        label.textAlignment = .center
-//        label.font = UIFont(name: "AvenirNext-Regular", size: 24)
-//        label.translatesAutoresizingMaskIntoConstraints = false
-//        return label
-//    }()
+    lazy var nameTextField: UITextField = {
+        
+        let text = UITextField()
+        text.delegate = self
+        text.textColor = UIColor(r: 64, g: 64, b: 64)
+        text.font = UIFont(name: "DINAlternate-bold", size: 18)
+        text.contentVerticalAlignment = .center
+        text.placeholder = "New Run"
+//        text.attributedPlaceholder = NSAttributedString(string: "New Run", attributes: [NSForegroundColorAttributeName: UIColor(white: 1, alpha: 0.9)])
+        text.translatesAutoresizingMaskIntoConstraints = false
+        return text
+    }()
     
-//    let inputFeelingView: UIView = { // container view for emoji collecion view
-//        let view = UIView()
-//        view.translatesAutoresizingMaskIntoConstraints = false
-//        return view
-//    }()
-    
-    // Emoji views
-//    lazy var emojiCollectionView: UICollectionView = {
-//        let layout  = UICollectionViewFlowLayout()
-//        layout.scrollDirection = .horizontal
-//        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-//        collectionView.register(EmojiCell.self, forCellWithReuseIdentifier: self.cellID)
-//        collectionView.delegate = self
-//        collectionView.dataSource = self
-//        collectionView.backgroundColor = UIColor.white
-//        collectionView.translatesAutoresizingMaskIntoConstraints = false
-//        collectionView.allowsMultipleSelection = false
-//
-//        return collectionView
-//    }()
-    
-//    var selectedEmoji = IndexPath()
-//    var afterRunFeelingOptions = AfterRunFeeling()
-//    private let cellID = "cellID"
+    lazy var mapview: MKMapView = {
+        let map = MKMapView()
+        map.mapType = .standard
+        map.delegate = self
+        map.translatesAutoresizingMaskIntoConstraints = false
+        return map
+    }()
     
     // Stats views
     lazy var statsContainerView: CompleteRunStatsContainerView = {
@@ -110,40 +101,26 @@ class FinishRunViewController: UIViewController/*, UICollectionViewDelegate, UIC
         return containerView
     }()
     
-    lazy var saveButton: UIButton = {
+    lazy var createClubButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("SAVE", for: .normal)
+        button.setTitle("Create Your Own Running Club", for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitleColor(UIColor.white, for: .normal)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 24)
-        button.backgroundColor = UIColor(r: 0, g: 128, b: 255)
-        button.layer.cornerRadius = 35
+        button.setTitleColor(UIColor(r: 0, g: 128, b: 255), for: .normal)
+        button.titleLabel?.font = UIFont(name: "AvenirNext-Regular", size: 12)
+        button.layer.borderWidth = 1.0
+        button.layer.borderColor = UIColor(r: 0, g: 128, b: 255).cgColor
+        button.layer.cornerRadius = 8
         button.layer.masksToBounds = true
         
-        button.addTarget(self, action: #selector(save), for: .touchUpInside)
-        
-        return button
-    }()
-
-    lazy var resumeButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("RESUME", for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitleColor(UIColor.red, for: .normal)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
-        
-        button.addTarget(self, action: #selector(resume), for: .touchUpInside)
+        button.addTarget(self, action: #selector(createClubButtonPressed), for: .touchUpInside)
         
         return button
     }()
 
     lazy var discardButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("DISCARD", for: .normal)
+        button.setBackgroundImage(UIImage(named:"TrashCanBlue"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitleColor(UIColor.red, for: .normal)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
-        
         button.addTarget(self, action: #selector(discard), for: .touchUpInside)
         
         return button
@@ -162,14 +139,18 @@ class FinishRunViewController: UIViewController/*, UICollectionViewDelegate, UIC
         super.viewDidLoad()
         
         view.backgroundColor = UIColor.white        
-        view.addSubview(bgImageView)
+
+        self.title = "Save New Run"
         
-        setupTitleView()
-//        setupSubtitleView()
-//        setupInputFeelingView()
+        self.hideKeyboardWhenTappedAround()
+        
+        addNavButtons()
+        
+        setupNameLabel()
+        setupNameTextField()
+        setupMapView()
+        setupCreateClubButton()
         setupStatsContainerView()
-        setupSaveButton()
-        setupResumeButton()
         setupDiscardButton()
         
         // debug
@@ -178,85 +159,73 @@ class FinishRunViewController: UIViewController/*, UICollectionViewDelegate, UIC
         }
     }
     
-    override var prefersStatusBarHidden: Bool {
-        return true
+//    override var prefersStatusBarHidden: Bool {
+//        return true
+//    }
+    
+    func addNavButtons() {
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(resume))
+        let saveButton = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveImageFirst))
+        
+        navigationItem.leftBarButtonItem = backButton
+        navigationItem.rightBarButtonItem = saveButton
     }
     
-    func setupTitleView() {
+    func setupNameLabel() {
         
-        view.addSubview(titleLabel)
+        view.addSubview(nameLabel)
         
         // x, y, width, height constraints
-        titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
-        titleLabel.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        titleLabel.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1/9).isActive = true
+        nameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
+        nameLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: (navBarBottomPosition + 10)).isActive = true
+        nameLabel.widthAnchor.constraint(equalToConstant: 60).isActive = true
+        nameLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
     }
     
-//    func setupSubtitleView() {
-//        
-//        view.addSubview(subtitleLabel)
-//        
-//        // x, y, width, height constraints
-//        subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-//        subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor).isActive = true
-//        subtitleLabel.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-//        subtitleLabel.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1/9).isActive = true
-//    }
+    func setupNameTextField() {
+        
+        view.addSubview(nameTextField)
+        
+        // x, y, width, height constraints
+        nameTextField.leftAnchor.constraint(equalTo: nameLabel.rightAnchor).isActive = true
+        nameTextField.bottomAnchor.constraint(equalTo: nameLabel.bottomAnchor).isActive = true
+        nameTextField.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10).isActive = true
+        nameTextField.heightAnchor.constraint(equalToConstant: 30).isActive = true
+    }
     
-//    func setupInputFeelingView() {
-//        
-//        view.addSubview(inputFeelingView)
-//        
-//        // x, y, width, height constraints
-//        inputFeelingView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-//        inputFeelingView.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor).isActive = true
-//        inputFeelingView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-//        inputFeelingView.heightAnchor.constraint(equalToConstant: 90).isActive = true
-//        
-//        inputFeelingView.addSubview(emojiCollectionView)
-//
-//        // x, y, width, height constraints
-//        emojiCollectionView.centerXAnchor.constraint(equalTo: inputFeelingView.centerXAnchor).isActive = true
-//        emojiCollectionView.centerYAnchor.constraint(equalTo: inputFeelingView.centerYAnchor).isActive = true
-//        emojiCollectionView.widthAnchor.constraint(equalTo: inputFeelingView.widthAnchor).isActive = true
-//        emojiCollectionView.heightAnchor.constraint(equalTo: inputFeelingView.heightAnchor, constant: -20).isActive = true
-//    }
+    func setupMapView() {
+        
+        view.addSubview(mapview)
+        
+        // x, y, width, height constraints
+        mapview.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        mapview.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 10).isActive = true
+        mapview.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        mapview.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.85).isActive = true
+        
+        loadMap()
+    }
     
+    func setupCreateClubButton() {
+        
+        view.addSubview(createClubButton)
+        
+        // x, y, width, height constraints
+        createClubButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        createClubButton.topAnchor.constraint(equalTo: mapview.bottomAnchor, constant: 20).isActive = true
+        createClubButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        createClubButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+    }
     func setupStatsContainerView() {
         
         view.addSubview(statsContainerView)
         
         // x, y, width, height constraints
         statsContainerView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        statsContainerView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10).isActive = true
+        statsContainerView.topAnchor.constraint(equalTo: createClubButton.bottomAnchor, constant: 10).isActive = true
         statsContainerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         statsContainerView.heightAnchor.constraint(equalToConstant: 80).isActive = true
-    }
-    
-    // TODO: add map view here
-    
-    
-    func setupSaveButton() {
-        
-        view.addSubview(saveButton)
-        
-        // x, y, width, height constraints
-        saveButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        saveButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10).isActive = true
-        saveButton.widthAnchor.constraint(equalToConstant: 70).isActive = true
-        saveButton.heightAnchor.constraint(equalToConstant: 70).isActive = true
-    }
-    
-    func setupResumeButton() {
-
-        view.addSubview(resumeButton)
-        
-        // x, y, width, height constraints
-        resumeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -view.frame.width/4).isActive = true
-        resumeButton.centerYAnchor.constraint(equalTo: saveButton.centerYAnchor).isActive = true
-        resumeButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        resumeButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
     }
     
     func setupDiscardButton() {
@@ -264,30 +233,78 @@ class FinishRunViewController: UIViewController/*, UICollectionViewDelegate, UIC
         view.addSubview(discardButton)
         
         // x, y, width, height constraints
-        discardButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: view.frame.width/4).isActive = true
-        discardButton.centerYAnchor.constraint(equalTo: saveButton.centerYAnchor).isActive = true
-        discardButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        discardButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        discardButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30).isActive = true
+        discardButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
+        discardButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        discardButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
     }
     
-    func save() {
+    func createClubButtonPressed() {
+        
+        print("button pressed")
+    }
+    
+    func saveImageFirst() {
+        
+        if let image = self.mapview.renderToImage() {
+            
+            let imageName = UUID().uuidString
+            let ref = FIRStorage.storage().reference().child("run_images").child(imageName)
+            if let data = UIImageJPEGRepresentation(image, 1.0) {
+                
+                ref.put(data, metadata: nil, completion: { (metadata, error) in
+                    
+                    if error != nil {
+                        
+                        print("[FINISH VIEW CONTROLLER] failed to upload image:", error.debugDescription)
+                        return
+                    }
+                    
+                    if let urlString = metadata?.downloadURL()?.absoluteString {
+                        
+                        self.saveRun(with: urlString)
+                    }
+                })
+            }
+        }
+    }
+    
+    private func saveRun(with imageURL: String) {
         
         let ref = FIRDatabase.database().reference().child("runs")
         let childRef = ref.childByAutoId()
+        let locationsRef = childRef.child("locations")
         
         guard let user = newRun?.user, let uid = user.id else { return }
                 
         var values = [String:Any]()
+        var locationValues = [String:Any]()
         
         guard let newRun = newRun, let timestamp = newRun.timestamp else { return }
         
-        values = ["totalRunDistance":newRun.totalRunDistance, "duration":newRun.duration, "pace": newRun.pace, "userID":uid, "timestamp": timestamp]
+        var runName = "New run"
+        if nameTextField.text != nil && nameTextField.text != "" {
+            runName = nameTextField.text!
+        }
+        
+        values = ["name":runName, "totalRunDistance":newRun.totalRunDistance, "duration":newRun.duration, "pace": newRun.pace, "pacesBySegment":newRun.pacesBySegment, "userID":uid, "timestamp": timestamp, "elevations":newRun.elevations, "calories":newRun.calories, "imageURL": imageURL]
+        
         childRef.updateChildValues(values) { (error, ref) in
             
             if error != nil {
                 
                 print(error.debugDescription)
                 return
+            }
+            
+            // save locations
+            if let locations = newRun.locations {
+                for eachLocation in locations {
+                    
+                    let eachLocationRef = locationsRef.childByAutoId()
+                    locationValues = ["latitude": eachLocation.coordinate.latitude, "longitude": eachLocation.coordinate.longitude]
+                    eachLocationRef.updateChildValues(locationValues)
+                }
             }
             
             print("[FINISH VIEW CONTROLLER] saved new run to firebase.")
@@ -319,92 +336,81 @@ class FinishRunViewController: UIViewController/*, UICollectionViewDelegate, UIC
             }
         }
     }
+
+    // MARK: - MapKit delegates and helper methods
+    func mapRegion() -> MKCoordinateRegion {
+        
+        guard let locations = newRun?.locations, let initialLoc = newRun?.locations?.first else {
+        
+            return MKCoordinateRegion()
+        }
+        
+        var minLat = Double(initialLoc.coordinate.latitude)
+        var minLng = Double(initialLoc.coordinate.longitude)
+        var maxLat = minLat
+        var maxLng = minLng
+        
+        for location in locations {
+            minLat = min(minLat, Double(location.coordinate.latitude))
+            minLng = min(minLng, Double(location.coordinate.longitude))
+            maxLat = max(maxLat, Double(location.coordinate.latitude))
+            maxLng = max(maxLng, Double(location.coordinate.longitude))
+        }
+        
+        return MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: (minLat + maxLat)/2, longitude: (minLng + maxLng)/2),span: MKCoordinateSpan(latitudeDelta: (maxLat - minLat) * 1.3, longitudeDelta: (maxLng - minLng) * 1.3))
+    }
     
-    //MARK: CollectionView Delegate and DataSource
-//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//
-//        return afterRunFeelingOptions.numberOfEmojis
-//    }
-//    
-//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-//        
-//        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellID, for: indexPath) as! EmojiCell
-//        cell.emoji = afterRunFeelingOptions.getEmojiImage(with: String(indexPath.row))
-//        cell.emojiView.alpha = 0.3
-//
-//        if indexPath == selectedEmoji {
-//            cell.emojiView.alpha = 1
-//        }
-//
-//        return cell
-//    }
-//    
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        return CGSize(width: emojiCollectionView.frame.height, height: emojiCollectionView.frame.height)
-//    }
-//    
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-//        return UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 14)
-//    }
-//    
-//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        
-//        if let cell = collectionView.cellForItem(at: indexPath) as? EmojiCell {
-//            selectedEmoji = indexPath
-//            cell.emojiView.alpha = 1
-//            animateView(view: cell.emojiView)
-//        }
-//    }
-//    
-//    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-//        
-//        if let cell = collectionView.cellForItem(at: selectedEmoji) as? EmojiCell {
-//            cell.emojiView.alpha = 0.3
-//        }
-//    }
-//
-//    func animateView(view: UIView) {
-//        
-//        UIView.animate(withDuration: 0.05, animations: {
-//            
-//            view.transform = .init(scaleX: 0.8, y: 0.8)
-//        }) { _ in
-//            
-//            UIView.animate(withDuration: 0.05) {
-//                view.transform = .identity
-//            }
-//        }
-//    }
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        
+        if overlay.isKind(of: MKPolyline.self){
+            
+            let polylineRenderer = MKPolylineRenderer(overlay: overlay)
+            polylineRenderer.strokeColor = UIColor(r: 0, g: 128, b: 255)
+            polylineRenderer.lineWidth = 5
+            polylineRenderer.lineCap = .round
+            return polylineRenderer
+        }
+        return MKOverlayRenderer(overlay: overlay)
+    }
+    
+    func polyline() -> MKPolyline {
+        
+        guard let locations = newRun?.locations else { return MKPolyline() }
+        var coords = [CLLocationCoordinate2D]()
+        for location in locations {
+            
+            coords.append(CLLocationCoordinate2D(latitude: Double(location.coordinate.latitude), longitude: Double(location.coordinate.longitude)))
+        }
+        
+        return MKPolyline(coordinates: &coords, count: locations.count)
+    }
+    
+    func loadMap() {
+        
+        guard let locations = newRun?.locations else { return }
+        
+        if locations.count > 0 {
+            
+            mapview.isHidden = false
+            
+            // Set the map bounds
+            mapview.region = mapRegion()
+            
+            // Make the line(s) on the map
+            mapview.add(polyline())
+        }
+        else {
+            // No locations were found!
+            mapview.isHidden = true
+            
+            print("[FINISH VIEW CONTROLLER] no locations found, so hide the map.")
+        }
+    }
+    
+    // MARK: - Text Field delegate
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
 }
-//
-//class EmojiCell: UICollectionViewCell {
-//    
-//    let emojiView: UIImageView = {
-//        let iv = UIImageView()
-//        iv.contentMode = .scaleAspectFill
-//        return iv
-//    }()
-//    
-//    var emoji: UIImage? {
-//        didSet {
-//            if let image = emoji {
-//                emojiView.image = image
-//            }
-//        }
-//    }
-//    
-//    override init(frame: CGRect) {
-//        super.init(frame: frame)
-//        
-//        setupViews()
-//    }
-//    
-//    required init?(coder aDecoder: NSCoder) {
-//        fatalError("init(coder:) has not been implemented")
-//    }
-//    
-//    func setupViews() {
-//        addSubview(emojiView)
-//        emojiView.frame = CGRect(x: 0, y: 0, width: frame.width, height: frame.width)
-//    }
-//}
+
