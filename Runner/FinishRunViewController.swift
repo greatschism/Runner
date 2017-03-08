@@ -106,10 +106,10 @@ class FinishRunViewController: UIViewController, MKMapViewDelegate, UITextFieldD
         button.setTitle("Create Your Own Running Club", for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitleColor(UIColor(r: 0, g: 128, b: 255), for: .normal)
-        button.titleLabel?.font = UIFont(name: "AvenirNext-Regular", size: 12)
+        button.titleLabel?.font = UIFont(name: "AvenirNext-Regular", size: 14)
         button.layer.borderWidth = 1.0
         button.layer.borderColor = UIColor(r: 0, g: 128, b: 255).cgColor
-        button.layer.cornerRadius = 8
+        button.layer.cornerRadius = 15
         button.layer.masksToBounds = true
         
         button.addTarget(self, action: #selector(createClubButtonPressed), for: .touchUpInside)
@@ -119,7 +119,7 @@ class FinishRunViewController: UIViewController, MKMapViewDelegate, UITextFieldD
 
     lazy var discardButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setBackgroundImage(UIImage(named:"TrashCanBlue"), for: .normal)
+        button.setBackgroundImage(UIImage(named:"TrashCan"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(discard), for: .touchUpInside)
         
@@ -166,8 +166,10 @@ class FinishRunViewController: UIViewController, MKMapViewDelegate, UITextFieldD
     func addNavButtons() {
         
         let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(resume))
+        backButton.tintColor = UIColor(r: 255, g: 55, b: 55)
         let saveButton = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveImageFirst))
-        
+        saveButton.tintColor = UIColor(r: 255, g: 55, b: 55)
+
         navigationItem.leftBarButtonItem = backButton
         navigationItem.rightBarButtonItem = saveButton
     }
@@ -177,8 +179,8 @@ class FinishRunViewController: UIViewController, MKMapViewDelegate, UITextFieldD
         view.addSubview(nameLabel)
         
         // x, y, width, height constraints
-        nameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
-        nameLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: (navBarBottomPosition + 10)).isActive = true
+        nameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        nameLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: (navBarBottomPosition + 20)).isActive = true
         nameLabel.widthAnchor.constraint(equalToConstant: 60).isActive = true
         nameLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
     }
@@ -200,9 +202,9 @@ class FinishRunViewController: UIViewController, MKMapViewDelegate, UITextFieldD
         
         // x, y, width, height constraints
         mapview.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        mapview.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 10).isActive = true
+        mapview.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 20).isActive = true
         mapview.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        mapview.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.85).isActive = true
+        mapview.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7).isActive = true
         
         loadMap()
     }
@@ -214,8 +216,8 @@ class FinishRunViewController: UIViewController, MKMapViewDelegate, UITextFieldD
         // x, y, width, height constraints
         createClubButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         createClubButton.topAnchor.constraint(equalTo: mapview.bottomAnchor, constant: 20).isActive = true
-        createClubButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        createClubButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        createClubButton.widthAnchor.constraint(equalToConstant: 250).isActive = true
+        createClubButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
     }
     func setupStatsContainerView() {
         
@@ -223,7 +225,7 @@ class FinishRunViewController: UIViewController, MKMapViewDelegate, UITextFieldD
         
         // x, y, width, height constraints
         statsContainerView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        statsContainerView.topAnchor.constraint(equalTo: createClubButton.bottomAnchor, constant: 10).isActive = true
+        statsContainerView.topAnchor.constraint(equalTo: createClubButton.bottomAnchor, constant: 20).isActive = true
         statsContainerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         statsContainerView.heightAnchor.constraint(equalToConstant: 80).isActive = true
     }
@@ -233,8 +235,8 @@ class FinishRunViewController: UIViewController, MKMapViewDelegate, UITextFieldD
         view.addSubview(discardButton)
         
         // x, y, width, height constraints
-        discardButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30).isActive = true
-        discardButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
+        discardButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -35).isActive = true
+        discardButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -35).isActive = true
         discardButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
         discardButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
     }

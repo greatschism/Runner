@@ -93,7 +93,7 @@ class CompleteRunStatsContainerView: UIView {
         // x, y, width, height constraints
         distanceTitle.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
         distanceTitle.topAnchor.constraint(equalTo: self.topAnchor, constant: 0).isActive = true
-        distanceTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1/4).isActive = true
+        distanceTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.25).isActive = true
         distanceTitle.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.4).isActive = true
         
         let distanceValue = distanceContainer[1]
@@ -123,11 +123,10 @@ class CompleteRunStatsContainerView: UIView {
         // x, y, width, height constraints
         durationTitle.leftAnchor.constraint(equalTo: distanceContainer[0].rightAnchor).isActive = true
         durationTitle.topAnchor.constraint(equalTo: self.topAnchor, constant: 0).isActive = true
-        durationTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1/4).isActive = true
+        durationTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.30).isActive = true
         durationTitle.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.4).isActive = true
         
         let durationValue = durationContainer[1]
-
         self.addSubview(durationValue)
         
         // x, y, width, height constraints
@@ -137,7 +136,6 @@ class CompleteRunStatsContainerView: UIView {
         durationValue.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.4).isActive = true
         
         let durationUnit = durationContainer[2]
-
         self.addSubview(durationUnit)
         
         // x, y, width, height constraints
@@ -155,7 +153,7 @@ class CompleteRunStatsContainerView: UIView {
         // x, y, width, height constraints
         paceTitle.leftAnchor.constraint(equalTo: durationContainer[0].rightAnchor).isActive = true
         paceTitle.topAnchor.constraint(equalTo: self.topAnchor, constant: 0).isActive = true
-        paceTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1/4).isActive = true
+        paceTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.20).isActive = true
         paceTitle.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.4).isActive = true
         
         let paceValue = paceContainer[1]
@@ -185,7 +183,7 @@ class CompleteRunStatsContainerView: UIView {
         // x, y, width, height constraints
         caloriesTitle.leftAnchor.constraint(equalTo: paceContainer[0].rightAnchor).isActive = true
         caloriesTitle.topAnchor.constraint(equalTo: self.topAnchor, constant: 0).isActive = true
-        caloriesTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1/4).isActive = true
+        caloriesTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.25).isActive = true
         caloriesTitle.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.4).isActive = true
         
         let caloriesValue = caloriesContainer[1]
