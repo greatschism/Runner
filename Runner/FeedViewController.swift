@@ -9,6 +9,7 @@
 import UIKit
 import CKCircleMenuView
 import Firebase
+import ReactiveCocoa
 
 class FeedViewController: UICollectionViewController, CKCircleMenuDelegate {
     
@@ -68,6 +69,13 @@ class FeedViewController: UICollectionViewController, CKCircleMenuDelegate {
     
     func bind() {
      
+        // Define selection command when a cell is touched. Push the selection object onto the nav stack.
+        feedViewModel?.selectCommand = RACCommand(signal: {[weak self](selection:Any!) -> RACSignal! in
+            
+            self?.navigationController?.pushViewController(selection as! UIViewController, animated: true)
+            
+            return RACSignal.empty()
+        })
     }
     
     func setupPlusButtonView() {

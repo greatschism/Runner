@@ -586,7 +586,7 @@ extension RunningViewController: CLLocationManagerDelegate, MKMapViewDelegate {
             
             let howRecent = location.timestamp.timeIntervalSinceNow
 
-            if abs(howRecent) < 10 && location.horizontalAccuracy < 15 {
+            if abs(howRecent) < 15 && location.horizontalAccuracy < 15 {
                 
                 if let lastLocation = self.locations.last {
                     

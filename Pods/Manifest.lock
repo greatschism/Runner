@@ -42,6 +42,15 @@ PODS:
     - GoogleToolboxForMac/NSString+URLArguments (= 2.1.1)
   - GoogleToolboxForMac/NSString+URLArguments (2.1.1)
   - GTMSessionFetcher/Core (1.1.8)
+  - ReactiveCocoa (2.4.7):
+    - ReactiveCocoa/UI (= 2.4.7)
+  - ReactiveCocoa/Core (2.4.7):
+    - ReactiveCocoa/no-arc
+  - ReactiveCocoa/no-arc (2.4.7)
+  - ReactiveCocoa/UI (2.4.7):
+    - ReactiveCocoa/Core
+  - ReactiveViewModel (0.3):
+    - ReactiveCocoa (~> 2.4)
 
 DEPENDENCIES:
   - Charts (~> 3.0.1)
@@ -50,6 +59,8 @@ DEPENDENCIES:
   - Firebase/Core
   - Firebase/Database
   - Firebase/Storage
+  - ReactiveCocoa (= 2.4.7)
+  - ReactiveViewModel (= 0.3)
 
 SPEC CHECKSUMS:
   Charts: 0e84f4418e87dad6a9edde221fba37ebb51d3ba7
@@ -63,7 +74,9 @@ SPEC CHECKSUMS:
   FirebaseStorage: 63628572a5fde258f8e933b5fb42697468da0158
   GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
   GTMSessionFetcher: 6f8d8b28b7e345549ac471071608170b31cb4977
+  ReactiveCocoa: eb38dee0a0e698f73a9b25e5c1faea2bb4c79240
+  ReactiveViewModel: 58918dcbcec2d3151195ab1ed9163c57a8163999
 
-PODFILE CHECKSUM: 7d4cff66b32b04285d5e1c5863c143ee0dd8261b
+PODFILE CHECKSUM: 6827ec913a33f3ac43ad906ef2877f870d37aa0e
 
 COCOAPODS: 1.2.0

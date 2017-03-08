@@ -11,5 +11,6 @@ target 'Runner' do
   pod 'Firebase/Database'
   pod 'Firebase/Auth'
   pod 'Firebase/Storage'
-
+  pod 'ReactiveCocoa', '2.4.7'
+  pod 'ReactiveViewModel', '0.3'  
 end

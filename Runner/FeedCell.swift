@@ -199,6 +199,7 @@ class FeedCell: UICollectionViewCell {
                 }
             }, withCancel: nil)
         }
+        
         usernameLabel.text = run.user?.name
         profileImage = UIImage(named: "mario-run")
         runNameLabel.text = run.name

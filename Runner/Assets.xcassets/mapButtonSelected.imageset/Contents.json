@@ -2,11 +2,11 @@
   "images" : [
     {
       "idiom" : "universal",
+      "filename" : "mapButtonSelected.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "mapButtonSelected.png",
       "scale" : "2x"
     },
     {

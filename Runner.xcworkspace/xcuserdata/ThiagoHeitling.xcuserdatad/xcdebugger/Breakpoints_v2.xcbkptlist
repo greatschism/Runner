@@ -6,32 +6,48 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "runner/FeedViewModel.swift"
-            timestampString = "509670754.599093"
+            filePath = "runner/RunningViewController.swift"
+            timestampString = "510474884.006429"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "88"
-            endingLineNumber = "88"
-            landmarkName = "observeAddedRuns()"
+            startingLineNumber = "226"
+            endingLineNumber = "226"
+            landmarkName = "startPauseButtonPressed()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "runner/FeedViewModel.swift"
-            timestampString = "509670754.599093"
+            filePath = "runner/RunningViewController.swift"
+            timestampString = "510474884.006429"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "112"
-            endingLineNumber = "112"
-            landmarkName = "observeRemovedRuns()"
+            startingLineNumber = "235"
+            endingLineNumber = "235"
+            landmarkName = "startPauseButtonPressed()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "runner/RunningViewController.swift"
+            timestampString = "510474884.006429"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "387"
+            endingLineNumber = "387"
+            landmarkName = "eachSecond()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

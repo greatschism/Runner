@@ -8,6 +8,8 @@
 
 import Foundation
 import Firebase
+import ReactiveCocoa
+import ReactiveViewModel
 
 class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
@@ -18,6 +20,8 @@ class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegat
     var currentUser: User?
     
     let syncManager = SyncManager.sharedInstance
+    
+    var selectCommand: RACCommand?
     
     override init() {
         super.init()
@@ -40,6 +44,15 @@ class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegat
         collectionView.allowsMultipleSelection = false
         
         return collectionView
+    }
+    
+    func getChildVC(for indexPath: IndexPath) -> UIViewController? {
+        
+        let selectedRun = runItems[indexPath.item]
+        let runDetailsVC = RunDetailsViewController()
+        runDetailsVC.run = selectedRun
+        
+        return runDetailsVC
     }
     
     func bind() {
@@ -134,6 +147,11 @@ class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegat
         return CGSize(width: collectionView.frame.width, height: collectionView.frame.width * 0.8)
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+
+        let childVC: UIViewController? = getChildVC(for: indexPath)
+        selectCommand?.execute(childVC)
+    }
     
     // To delete a run item
     
