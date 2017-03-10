@@ -47,11 +47,15 @@ class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegat
     }
     
     func getChildVC(for indexPath: IndexPath) -> UIViewController? {
-        
+
         let selectedRun = runItems[indexPath.item]
-        let runDetailsVC = RunDetailsViewController()
-        runDetailsVC.run = selectedRun
+
+        let runDetailsViewModel = RunDetailsViewModel()
+        runDetailsViewModel.run = selectedRun
         
+        let runDetailsVC = RunDetailsViewController()
+        runDetailsVC.runDetailsViewModel = runDetailsViewModel
+                
         return runDetailsVC
     }
     

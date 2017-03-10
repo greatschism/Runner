@@ -37,6 +37,8 @@ class FinishRunViewController: UIViewController, MKMapViewDelegate, UITextFieldD
         return label
     }()
     
+    let limitRunNameLength = 40
+    
     lazy var nameTextField: UITextField = {
         
         let text = UITextField()
@@ -413,6 +415,13 @@ class FinishRunViewController: UIViewController, MKMapViewDelegate, UITextFieldD
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        
+        guard let text = textField.text else { return true }
+        let newLength = text.characters.count + string.characters.count - range.length
+        return newLength <= limitRunNameLength
     }
 }
 

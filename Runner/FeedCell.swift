@@ -44,7 +44,7 @@ class FeedCell: UICollectionViewCell {
         
         let label = UILabel()
         label.textColor = UIColor.black
-        label.font = UIFont(name: "AvenirNext-Regular", size: 14)
+        label.font = UIFont(name: "AvenirNext-Regular", size: 16)
         label.translatesAutoresizingMaskIntoConstraints = false
 
         return label
@@ -54,7 +54,7 @@ class FeedCell: UICollectionViewCell {
         
         let label = UILabel()
         label.textColor = UIColor(r: 64, g: 64, b: 64)
-        label.font = UIFont(name: "AvenirNext-Regular", size: 12)
+        label.font = UIFont(name: "AvenirNext-Regular", size: 16)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -63,7 +63,7 @@ class FeedCell: UICollectionViewCell {
         
         let label = UILabel()
         label.textColor = UIColor(r: 64, g: 64, b: 64)
-        label.font = UIFont(name: "AvenirNext-Regular", size: 12)
+        label.font = UIFont(name: "AvenirNext-Regular", size: 14)
         label.translatesAutoresizingMaskIntoConstraints = false
 
         return label
@@ -73,7 +73,7 @@ class FeedCell: UICollectionViewCell {
         
         let label = UILabel()
         label.textColor = UIColor(r: 64, g: 64, b: 64)
-        label.font = UIFont(name: "AvenirNext-Regular", size: 12)
+        label.font = UIFont(name: "AvenirNext-Regular", size: 14)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -82,7 +82,7 @@ class FeedCell: UICollectionViewCell {
         
         let label = UILabel()
         label.textColor = UIColor(r: 64, g: 64, b: 64)
-        label.font = UIFont(name: "AvenirNext-Regular", size: 12)
+        label.font = UIFont(name: "AvenirNext-Regular", size: 14)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -90,7 +90,7 @@ class FeedCell: UICollectionViewCell {
     let runTimeLabel: UILabel = {
        
         let label = UILabel()
-        label.textColor = UIColor.lightGray
+        label.textColor = .gray
         label.font = UIFont(name: "AvenirNext-Regular", size: 12)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -134,31 +134,31 @@ class FeedCell: UICollectionViewCell {
         
         // x, y, width, height constraints
         userProfileImageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10).isActive = true
-        userProfileImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 12).isActive = true
+        userProfileImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 15).isActive = true
         userProfileImageView.widthAnchor.constraint(equalToConstant: 50).isActive = true
         userProfileImageView.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
         // x, y, width, height constraints
-        runTimeLabel.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
-        runTimeLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
-        runTimeLabel.widthAnchor.constraint(equalToConstant: 130).isActive = true
+        runTimeLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -2).isActive = true
+        runTimeLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 12).isActive = true
+        runTimeLabel.widthAnchor.constraint(equalToConstant: 140).isActive = true
         runTimeLabel.heightAnchor.constraint(equalTo: runDistanceLabel.heightAnchor).isActive = true
         
         // x, y, width, height constraints
         usernameLabel.leftAnchor.constraint(equalTo: userProfileImageView.rightAnchor, constant: 10).isActive = true
-        usernameLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
+        usernameLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 13).isActive = true
         usernameLabel.rightAnchor.constraint(equalTo: runTimeLabel.leftAnchor, constant: -8).isActive = true
         usernameLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
 
         // x, y, width, height constraints
         runNameLabel.leftAnchor.constraint(equalTo: usernameLabel.leftAnchor).isActive = true
-        runNameLabel.topAnchor.constraint(equalTo: usernameLabel.bottomAnchor, constant: 0).isActive = true
-        runNameLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -10).isActive = true
+        runNameLabel.topAnchor.constraint(equalTo: usernameLabel.bottomAnchor, constant: 1).isActive = true
+        runNameLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -50).isActive = true
         runNameLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
         // x, y, width, height constraints
         runDistanceLabel.leftAnchor.constraint(equalTo: usernameLabel.leftAnchor).isActive = true
-        runDistanceLabel.topAnchor.constraint(equalTo: runNameLabel.bottomAnchor, constant: 0).isActive = true
+        runDistanceLabel.topAnchor.constraint(equalTo: runNameLabel.bottomAnchor, constant: 1).isActive = true
         runDistanceLabel.widthAnchor.constraint(equalToConstant: 70).isActive = true
         runDistanceLabel.heightAnchor.constraint(equalToConstant: 24).isActive = true
         

@@ -25,7 +25,7 @@ class FeedViewController: UICollectionViewController, CKCircleMenuDelegate {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitleColor(UIColor.white, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 24)
-        button.backgroundColor = UIColor(r: 0, g: 128, b: 255)
+        button.backgroundColor = UIColor(r: 255, g: 55, b: 55)
         button.layer.shadowColor = UIColor.black.cgColor
         button.layer.shadowOffset = CGSize(width: 2, height: 2)
         button.layer.shadowOpacity = 0.5
@@ -52,7 +52,7 @@ class FeedViewController: UICollectionViewController, CKCircleMenuDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.title = "FEED"
+        navigationItem.title = "Feed"
         
         if let feedVM = feedViewModel, let collectionView = feedViewModel?.collectionView {
 
@@ -72,6 +72,7 @@ class FeedViewController: UICollectionViewController, CKCircleMenuDelegate {
         // Define selection command when a cell is touched. Push the selection object onto the nav stack.
         feedViewModel?.selectCommand = RACCommand(signal: {[weak self](selection:Any!) -> RACSignal! in
             
+            self?.navigationController?.navigationBar.tintColor = .red
             self?.navigationController?.pushViewController(selection as! UIViewController, animated: true)
             
             return RACSignal.empty()
@@ -162,27 +163,4 @@ class FeedViewController: UICollectionViewController, CKCircleMenuDelegate {
     }
 }
 
-extension UIView {
-    
-    func renderToImage() -> UIImage? {
-        
-        UIGraphicsBeginImageContext(self.frame.size)
-        
-        guard let context = UIGraphicsGetCurrentContext() else { return nil }
-        self.layer.render(in: context)
-        guard let image = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
-        UIGraphicsEndImageContext()
-        return image
-    }
-}
 
-extension UIViewController {
-    func hideKeyboardWhenTappedAround() {
-        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
-        view.addGestureRecognizer(tap)
-    }
-    
-    func dismissKeyboard() {
-        view.endEditing(true)
-    }
-}

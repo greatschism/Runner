@@ -68,6 +68,22 @@ struct RawValueFormatter {
         }
     }
     
+    func getPaceString(with paceInSeconds: Int) -> String {
+        
+        let minutes: String
+        
+        if (paceInSeconds / 60 % 60) >= 10 {
+            minutes = String(format: "%02d", paceInSeconds / 60 % 60)
+        }
+        else {
+            minutes = String(format: "%01d", paceInSeconds / 60 % 60)
+        }
+        
+        let seconds = String(format: "%02d", paceInSeconds % 60)
+        
+        return "\(minutes):\(seconds) /km"
+    }
+    
     func getCaloriesString(with calories: Int) -> String {
         return String(format: "%03d", calories)
     }

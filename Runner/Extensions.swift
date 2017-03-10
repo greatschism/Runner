@@ -8,6 +8,20 @@
 
 import UIKit
 
+extension UIView {
+    
+    func renderToImage() -> UIImage? {
+        
+        UIGraphicsBeginImageContext(self.frame.size)
+        
+        guard let context = UIGraphicsGetCurrentContext() else { return nil }
+        self.layer.render(in: context)
+        guard let image = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
+        UIGraphicsEndImageContext()
+        return image
+    }
+}
+
 let imageCache = NSCache<NSString, UIImage>()
 
 extension UIImageView {
@@ -44,5 +58,16 @@ extension UIImageView {
                 }
             }
         }.resume()
+    }
+}
+
+extension UIViewController {
+    func hideKeyboardWhenTappedAround() {
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
+        view.addGestureRecognizer(tap)
+    }
+    
+    func dismissKeyboard() {
+        view.endEditing(true)
     }
 }
