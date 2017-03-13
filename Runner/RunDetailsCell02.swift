@@ -126,13 +126,14 @@ class RunDetailsCell02: UICollectionViewCell, ChartViewDelegate {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+        setupViews()
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(with run: Run) {
+    func setupViews() {
         
         addSubview(graphTitle)
         addSubview(altitudeGraphView)
@@ -156,7 +157,7 @@ class RunDetailsCell02: UICollectionViewCell, ChartViewDelegate {
         // x, y, width, height constraints
         maxAltitudeTitle.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
         maxAltitudeTitle.topAnchor.constraint(equalTo: altitudeGraphView.bottomAnchor, constant: 10).isActive = true
-        maxAltitudeTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.5).isActive = true
+        maxAltitudeTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.6).isActive = true
         maxAltitudeTitle.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
         // x, y, width, height constraints
@@ -168,7 +169,7 @@ class RunDetailsCell02: UICollectionViewCell, ChartViewDelegate {
         // x, y, width, height constraints
         minAltitudeTitle.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
         minAltitudeTitle.topAnchor.constraint(equalTo: altitudeGraphView.bottomAnchor, constant: 10).isActive = true
-        minAltitudeTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.5).isActive = true
+        minAltitudeTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.6).isActive = true
         minAltitudeTitle.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
         // x, y, width, height constraints
@@ -176,18 +177,33 @@ class RunDetailsCell02: UICollectionViewCell, ChartViewDelegate {
         minAltitudeValue.topAnchor.constraint(equalTo: minAltitudeTitle.bottomAnchor, constant: 10).isActive = true
         minAltitudeValue.widthAnchor.constraint(equalTo: minAltitudeTitle.widthAnchor).isActive = true
         minAltitudeValue.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        
-        updateElevationChart(with: run)
     }
     
     // Line chart for elevations
-    func updateElevationChart(with run: Run) {
+    func configure(with run: Run) {
         
         var dataEntries = [ChartDataEntry]()
+        var maxAltitude = run.elevations[0]
+        var minAltitude = run.elevations[1]
+        
         for i in 0..<run.elevations.count {
+            
             let dataEntry = ChartDataEntry(x: Double(i), y: Double(run.elevations[i]))
             dataEntries.append(dataEntry)
+            
+            if run.elevations[i] > maxAltitude {
+                maxAltitude = run.elevations[i]
+            }
+            if run.elevations[i] < minAltitude {
+                minAltitude = run.elevations[i]
+            }
         }
+        
+        // update max altitude labels
+        maxAltitudeValue.text = "\(maxAltitude) m"
+        
+        // update min altitude labels
+        minAltitudeValue.text = "\(minAltitude) m"
         
         let chartDataSet: LineChartDataSet
         
@@ -220,60 +236,6 @@ class RunDetailsCell02: UICollectionViewCell, ChartViewDelegate {
         }
         
         // animate graph
-//        altitudeGraphView.animate(yAxisDuration: 1.0, easingOption: .easeInOutExpo)
+        altitudeGraphView.animate(yAxisDuration: 1.0, easingOption: .easeInOutExpo)
     }
-    
-    // Bar chart for pace of each segment
-//    func updatePaceChart(with run: Run) {
-//        
-//        var dataEntries = [BarChartDataEntry]()
-//        var fastestSplit = run.pacesBySegment[0]
-//        var slowestSplit = run.pacesBySegment[0]
-//        
-//        for i in 0..<run.pacesBySegment.count {
-//            
-//            let dataEntry = BarChartDataEntry(x: Double(i), y: Double(run.pacesBySegment[i]))
-//            dataEntries.append(dataEntry)
-//            
-//            if run.pacesBySegment[i] < fastestSplit {
-//                fastestSplit = run.pacesBySegment[i]
-//            }
-//            if run.pacesBySegment[i] > slowestSplit {
-//                slowestSplit = run.pacesBySegment[i]
-//            }
-//        }
-//        
-//        // update fastest split labels
-//        maxAltitudeValue.text = RawValueFormatter().getPaceString(with: fastestSplit)
-//        
-//        // update slowest split labels
-//        minAltitudeValue.text = RawValueFormatter().getPaceString(with: slowestSplit)
-//        
-//        let chartDataSet = BarChartDataSet(values: dataEntries, label: "Avg pace by segment")
-//        let chartData = BarChartData(dataSet: chartDataSet)
-//        
-//        let valueFormatter = ChartValueFormatter()
-//        chartData.setValueFormatter(valueFormatter)
-//        
-//        // Setup font for values. Show values only if ran 10 km or less (to avoid clashing value strings)
-//        if run.pacesBySegment.count <= 10 {
-//            
-//            chartData.setValueFont(UIFont(name: "AvenirNext-Regular", size: 14))
-//            chartData.setValueTextColor(valueTextColor)
-//        }
-//        else {
-//            
-//            chartData.setDrawValues(false)
-//        }
-//        
-//        if run.pacesBySegment.count == 1 {
-//            
-//            chartData.barWidth = chartData.barWidth / 2
-//        }
-//        
-//        paceGraphView.data = chartData
-//        
-//        // animate bars
-//        paceGraphView.animate(yAxisDuration: 1.0, easingOption: .easeInOutExpo)
-//    }
 }

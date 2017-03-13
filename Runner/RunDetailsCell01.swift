@@ -123,13 +123,14 @@ class RunDetailsCell01: UICollectionViewCell, ChartViewDelegate {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+        setupViews()
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(with run: Run) {
+    func setupViews() {
         
         addSubview(graphTitle)
         addSubview(paceGraphView)
@@ -153,7 +154,7 @@ class RunDetailsCell01: UICollectionViewCell, ChartViewDelegate {
         // x, y, width, height constraints
         fastestSplitTitle.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
         fastestSplitTitle.topAnchor.constraint(equalTo: paceGraphView.bottomAnchor, constant: 10).isActive = true
-        fastestSplitTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.5).isActive = true
+        fastestSplitTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.6).isActive = true
         fastestSplitTitle.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
         // x, y, width, height constraints
@@ -165,20 +166,18 @@ class RunDetailsCell01: UICollectionViewCell, ChartViewDelegate {
         // x, y, width, height constraints
         slowestSplitTitle.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
         slowestSplitTitle.topAnchor.constraint(equalTo: paceGraphView.bottomAnchor, constant: 10).isActive = true
-        slowestSplitTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.5).isActive = true
+        slowestSplitTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.6).isActive = true
         slowestSplitTitle.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
         // x, y, width, height constraints
         slowestSplitValue.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
         slowestSplitValue.topAnchor.constraint(equalTo: slowestSplitTitle.bottomAnchor, constant: 10).isActive = true
         slowestSplitValue.widthAnchor.constraint(equalTo: slowestSplitTitle.widthAnchor).isActive = true
-        slowestSplitValue.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        
-        updatePaceChart(with: run)
+        slowestSplitValue.heightAnchor.constraint(equalToConstant: 20).isActive = true        
     }
     
     // Bar chart for pace of each segment
-    func updatePaceChart(with run: Run) {
+    func configure(with run: Run) {
         
         var dataEntries = [BarChartDataEntry]()
         var fastestSplit = run.pacesBySegment[0]
