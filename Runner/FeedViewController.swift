@@ -72,7 +72,6 @@ class FeedViewController: UICollectionViewController, CKCircleMenuDelegate {
         // Define selection command when a cell is touched. Push the selection object onto the nav stack.
         feedViewModel?.selectCommand = RACCommand(signal: {[weak self](selection:Any!) -> RACSignal! in
             
-            self?.navigationController?.navigationBar.tintColor = .red
             self?.navigationController?.pushViewController(selection as! UIViewController, animated: true)
             
             return RACSignal.empty()
