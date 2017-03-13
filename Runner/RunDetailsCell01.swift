@@ -11,6 +11,8 @@ import Charts
 
 class RunDetailsCell01: UICollectionViewCell, ChartViewDelegate {
     
+    var isAlreadyShown = false
+    
     // Fonts
     let titleFont = UIFont(name: "AvenirNext-Regular", size: 12)
     let titleTextColor = UIColor(r: 32, g: 32, b: 32)
@@ -78,6 +80,15 @@ class RunDetailsCell01: UICollectionViewCell, ChartViewDelegate {
         return label
     }()
     
+    let graphContainerView: UIView = {
+        
+        let view = UIView()
+        view.backgroundColor = .white
+        view.translatesAutoresizingMaskIntoConstraints = false
+        
+        return view
+    }()
+    
     lazy var paceGraphView: BarChartView = {
         
         let view = BarChartView()
@@ -106,6 +117,7 @@ class RunDetailsCell01: UICollectionViewCell, ChartViewDelegate {
         
         view.dragEnabled = false
         view.pinchZoomEnabled = false
+        view.doubleTapToZoomEnabled = false
         
         // set no data text placeholder
         view.noDataText = "   Pace graph is displayed\nfor runs with 1 km and more"
@@ -133,7 +145,8 @@ class RunDetailsCell01: UICollectionViewCell, ChartViewDelegate {
     func setupViews() {
         
         addSubview(graphTitle)
-        addSubview(paceGraphView)
+        addSubview(graphContainerView)
+        graphContainerView.addSubview(paceGraphView)
         addSubview(fastestSplitTitle)
         addSubview(fastestSplitValue)
         addSubview(slowestSplitTitle)
@@ -146,14 +159,20 @@ class RunDetailsCell01: UICollectionViewCell, ChartViewDelegate {
         graphTitle.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
         // x, y, width, height constraints
-        paceGraphView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
-        paceGraphView.topAnchor.constraint(equalTo: graphTitle.bottomAnchor, constant: 10).isActive = true
-        paceGraphView.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true
-        paceGraphView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -80).isActive = true
+        graphContainerView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+        graphContainerView.topAnchor.constraint(equalTo: graphTitle.bottomAnchor, constant: 10).isActive = true
+        graphContainerView.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true
+        graphContainerView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -80).isActive = true
+        
+        // x, y, width, height constraints
+        paceGraphView.centerXAnchor.constraint(equalTo: graphContainerView.centerXAnchor).isActive = true
+        paceGraphView.topAnchor.constraint(equalTo: graphContainerView.topAnchor).isActive = true
+        paceGraphView.widthAnchor.constraint(equalTo: graphContainerView.widthAnchor, constant: -10).isActive = true
+        paceGraphView.bottomAnchor.constraint(equalTo: graphContainerView.bottomAnchor, constant: -10).isActive = true
         
         // x, y, width, height constraints
         fastestSplitTitle.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
-        fastestSplitTitle.topAnchor.constraint(equalTo: paceGraphView.bottomAnchor, constant: 10).isActive = true
+        fastestSplitTitle.topAnchor.constraint(equalTo: graphContainerView.bottomAnchor, constant: 10).isActive = true
         fastestSplitTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.6).isActive = true
         fastestSplitTitle.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
@@ -165,7 +184,7 @@ class RunDetailsCell01: UICollectionViewCell, ChartViewDelegate {
         
         // x, y, width, height constraints
         slowestSplitTitle.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
-        slowestSplitTitle.topAnchor.constraint(equalTo: paceGraphView.bottomAnchor, constant: 10).isActive = true
+        slowestSplitTitle.topAnchor.constraint(equalTo: graphContainerView.bottomAnchor, constant: 10).isActive = true
         slowestSplitTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.6).isActive = true
         slowestSplitTitle.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
@@ -178,6 +197,8 @@ class RunDetailsCell01: UICollectionViewCell, ChartViewDelegate {
     
     // Bar chart for pace of each segment
     func configure(with run: Run) {
+        
+        guard run.pacesBySegment.count > 0 else { return }
         
         var dataEntries = [BarChartDataEntry]()
         var fastestSplit = run.pacesBySegment[0]
@@ -226,7 +247,6 @@ class RunDetailsCell01: UICollectionViewCell, ChartViewDelegate {
         
         paceGraphView.data = chartData
         
-        // animate bars
-        paceGraphView.animate(yAxisDuration: 1.0, easingOption: .easeInOutExpo)
+        paceGraphView.isHidden = !isAlreadyShown
     }
 }

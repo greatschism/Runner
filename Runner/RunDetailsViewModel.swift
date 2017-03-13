@@ -19,18 +19,15 @@ class RunDetailsViewModel: NSObject, UICollectionViewDelegate, UICollectionViewD
     
     var selectCommand: RACCommand?
     
-    let numberOfPages = 4
-
     lazy var pageControl: UIPageControl = {
         let pc = UIPageControl()
         pc.pageIndicatorTintColor = .lightGray
         pc.translatesAutoresizingMaskIntoConstraints = false
         pc.currentPageIndicatorTintColor = UIColor(r: 255, g: 55, b: 55)
         pc.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
-        pc.numberOfPages = self.numberOfPages
+        pc.numberOfPages = self.cellIDs.count
         return pc
     }()
-    
     
     override init() {
         super.init()
@@ -54,6 +51,7 @@ class RunDetailsViewModel: NSObject, UICollectionViewDelegate, UICollectionViewD
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.allowsMultipleSelection = false
         collectionView.isPagingEnabled = true
+        collectionView.showsHorizontalScrollIndicator = false
         
         return collectionView
     }
@@ -61,7 +59,7 @@ class RunDetailsViewModel: NSObject, UICollectionViewDelegate, UICollectionViewD
     //MARK: CollectionView Delegate and DataSource
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        return numberOfPages
+        return cellIDs.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -77,6 +75,7 @@ class RunDetailsViewModel: NSObject, UICollectionViewDelegate, UICollectionViewD
         else if indexPath.row == 1 {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.cellIDs[1], for: indexPath) as! RunDetailsCell01
+            
             if let run = self.run {
                 cell.configure(with: run)
             }
@@ -85,6 +84,7 @@ class RunDetailsViewModel: NSObject, UICollectionViewDelegate, UICollectionViewD
         else if indexPath.row == 2 {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.cellIDs[2], for: indexPath) as! RunDetailsCell02
+            
             if let run = self.run {
                 cell.configure(with: run)
             }
@@ -101,4 +101,35 @@ class RunDetailsViewModel: NSObject, UICollectionViewDelegate, UICollectionViewD
         return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
     }
     
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        
+        let pageNumber = Int(targetContentOffset.pointee.x / scrollView.frame.width)
+        pageControl.currentPage = pageNumber
+        
+        animateGraph(for: pageNumber)
+    }
+    
+    func animateGraph(for page:Int) {
+        
+        if page == 1 {
+            
+            let cell = collectionView?.cellForItem(at: IndexPath(item: page, section: 0)) as! RunDetailsCell01
+            cell.paceGraphView.isHidden = false
+
+            if !cell.isAlreadyShown {
+                cell.paceGraphView.animate(yAxisDuration: 0.5, easingOption: .easeInOutExpo)
+                cell.isAlreadyShown = true
+            }
+        }
+        if page == 2 {
+            
+            let cell = collectionView?.cellForItem(at: IndexPath(item: page, section: 0)) as! RunDetailsCell02
+            cell.altitudeGraphView.isHidden = false
+
+            if !cell.isAlreadyShown {
+                cell.altitudeGraphView.animate(yAxisDuration: 0.5, easingOption: .easeInOutExpo)
+                cell.isAlreadyShown = true
+            }
+        }
+    }
 }

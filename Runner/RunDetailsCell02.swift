@@ -11,6 +11,8 @@ import Charts
 
 class RunDetailsCell02: UICollectionViewCell, ChartViewDelegate {
     
+    var isAlreadyShown = false
+
     // Fonts
     let titleFont = UIFont(name: "AvenirNext-Regular", size: 12)
     let titleTextColor = UIColor(r: 32, g: 32, b: 32)
@@ -21,7 +23,7 @@ class RunDetailsCell02: UICollectionViewCell, ChartViewDelegate {
     let graphTitle: UILabel = {
         
         let label = UILabel()
-        label.text = "Altitude"
+        label.text = "Altitude by Distance (km)"
         label.textColor = .black
         label.textAlignment = .center
         label.font = UIFont(name: "AvenirNext-Regular", size: 16)
@@ -78,6 +80,15 @@ class RunDetailsCell02: UICollectionViewCell, ChartViewDelegate {
         return label
     }()
     
+    let graphContainerView: UIView = {
+        
+        let view = UIView()
+        view.backgroundColor = .white
+        view.translatesAutoresizingMaskIntoConstraints = false
+        
+        return view
+    }()
+    
     lazy var altitudeGraphView: LineChartView = {
         let view = LineChartView()
         
@@ -90,30 +101,30 @@ class RunDetailsCell02: UICollectionViewCell, ChartViewDelegate {
         view.rightAxis.drawGridLinesEnabled = false
         view.xAxis.drawGridLinesEnabled = false
         
-        // hide axis lines
+        // axis lines
         view.xAxis.drawAxisLineEnabled = false
         view.leftAxis.drawAxisLineEnabled = false
-        view.rightAxis.drawAxisLineEnabled = true
+        view.rightAxis.drawAxisLineEnabled = false
         
-        // hide labels on X axis
-        view.xAxis.drawLabelsEnabled = false
+        view.xAxis.labelPosition = .bottom
+        view.xAxis.labelTextColor = self.valueTextColor
         
         view.leftAxis.drawLabelsEnabled = true
         view.leftAxis.labelTextColor = self.valueTextColor
 
-        view.rightAxis.drawLabelsEnabled = true
-        view.rightAxis.labelTextColor = self.valueTextColor
+        view.rightAxis.drawLabelsEnabled = false
         
         view.leftAxis.axisMinimum = 0
         view.rightAxis.axisMinimum = 0
         
         view.dragEnabled = false
         view.pinchZoomEnabled = false
+        view.doubleTapToZoomEnabled = false
         
         // set no data text placeholder
-        view.noDataText = "No altitude data\n  to display yet"
-        view.noDataFont = UIFont(name: "AvenirNext-Regular", size: 11)
-        view.noDataTextColor = self.valueTextColor
+        view.noDataText = "    No altitude data\nto display for this run"
+        view.noDataFont = UIFont(name: "AvenirNext-Regular", size: 12)
+        view.noDataTextColor = UIColor(r: 255, g: 55, b: 55)
         
         view.legend.enabled = false
         
@@ -136,7 +147,8 @@ class RunDetailsCell02: UICollectionViewCell, ChartViewDelegate {
     func setupViews() {
         
         addSubview(graphTitle)
-        addSubview(altitudeGraphView)
+        addSubview(graphContainerView)
+        graphContainerView.addSubview(altitudeGraphView)
         addSubview(maxAltitudeTitle)
         addSubview(maxAltitudeValue)
         addSubview(minAltitudeTitle)
@@ -149,14 +161,20 @@ class RunDetailsCell02: UICollectionViewCell, ChartViewDelegate {
         graphTitle.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
         // x, y, width, height constraints
-        altitudeGraphView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
-        altitudeGraphView.topAnchor.constraint(equalTo: graphTitle.bottomAnchor, constant: 10).isActive = true
-        altitudeGraphView.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true
-        altitudeGraphView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -80).isActive = true
+        graphContainerView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+        graphContainerView.topAnchor.constraint(equalTo: graphTitle.bottomAnchor, constant: 10).isActive = true
+        graphContainerView.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true
+        graphContainerView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -80).isActive = true
+        
+        // x, y, width, height constraints
+        altitudeGraphView.centerXAnchor.constraint(equalTo: graphContainerView.centerXAnchor).isActive = true
+        altitudeGraphView.topAnchor.constraint(equalTo: graphContainerView.topAnchor).isActive = true
+        altitudeGraphView.widthAnchor.constraint(equalTo: graphContainerView.widthAnchor, constant: -10).isActive = true
+        altitudeGraphView.bottomAnchor.constraint(equalTo: graphContainerView.bottomAnchor, constant: -10).isActive = true
         
         // x, y, width, height constraints
         maxAltitudeTitle.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
-        maxAltitudeTitle.topAnchor.constraint(equalTo: altitudeGraphView.bottomAnchor, constant: 10).isActive = true
+        maxAltitudeTitle.topAnchor.constraint(equalTo: graphContainerView.bottomAnchor, constant: 10).isActive = true
         maxAltitudeTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.6).isActive = true
         maxAltitudeTitle.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
@@ -168,7 +186,7 @@ class RunDetailsCell02: UICollectionViewCell, ChartViewDelegate {
         
         // x, y, width, height constraints
         minAltitudeTitle.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
-        minAltitudeTitle.topAnchor.constraint(equalTo: altitudeGraphView.bottomAnchor, constant: 10).isActive = true
+        minAltitudeTitle.topAnchor.constraint(equalTo: graphContainerView.bottomAnchor, constant: 10).isActive = true
         minAltitudeTitle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.6).isActive = true
         minAltitudeTitle.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
@@ -182,13 +200,15 @@ class RunDetailsCell02: UICollectionViewCell, ChartViewDelegate {
     // Line chart for elevations
     func configure(with run: Run) {
         
+        guard run.elevations.count > 1 else { return }
+        
         var dataEntries = [ChartDataEntry]()
         var maxAltitude = run.elevations[0]
-        var minAltitude = run.elevations[1]
+        var minAltitude = run.elevations[0]
         
         for i in 0..<run.elevations.count {
             
-            let dataEntry = ChartDataEntry(x: Double(i), y: Double(run.elevations[i]))
+            let dataEntry = ChartDataEntry(x: Double(i)/10, y: Double(run.elevations[i])) // divide by 10 to get X Axis in 'km'
             dataEntries.append(dataEntry)
             
             if run.elevations[i] > maxAltitude {
@@ -229,13 +249,17 @@ class RunDetailsCell02: UICollectionViewCell, ChartViewDelegate {
             chartDataSet.fillAlpha = 1.0
             chartDataSet.drawHorizontalHighlightIndicatorEnabled = false
             chartDataSet.drawFilledEnabled = true
+
+//            let gradientColors = [UIColor(r: 153, g: 255, b: 204).cgColor, UIColor.clear.cgColor] as CFArray
+//            let colorLocations:[CGFloat] = [1.0, 0.0] // Positioning of the gradient
+//            let gradient = CGGradient.init(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: gradientColors, locations: colorLocations)
+//            chartDataSet.fill = Fill.fillWithLinearGradient(gradient!, angle: 90.0)
             
             let data = LineChartData(dataSet: chartDataSet)
             data.setDrawValues(false)
             altitudeGraphView.data = data
         }
         
-        // animate graph
-        altitudeGraphView.animate(yAxisDuration: 1.0, easingOption: .easeInOutExpo)
+        altitudeGraphView.isHidden = !isAlreadyShown
     }
 }

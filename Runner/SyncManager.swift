@@ -29,7 +29,10 @@ class SyncManager {
                 
                 if let runName = runDictionary["name"] as? String, let runDuration = runDictionary["duration"] as? Int,
                     let runDistance = runDictionary["totalRunDistance"] as? Int,
-                    let runPace = runDictionary["pace"] as? Double, let userID = runDictionary["userID"] as? String, let startingTime = runDictionary["timestamp"] as? Int, let imageURL = runDictionary["imageURL"] as? String, let pacesBySegment = runDictionary["pacesBySegment"] as? [Int], let calories = runDictionary["calories"] as? Int, let elevations = runDictionary["elevations"] as? [Int] {
+                    let runPace = runDictionary["pace"] as? Double, let userID = runDictionary["userID"] as? String, let startingTime = runDictionary["timestamp"] as? Int, let imageURL = runDictionary["imageURL"] as? String, let calories = runDictionary["calories"] as? Int, let elevations = runDictionary["elevations"] as? [Int] {
+                    
+                    
+                    let pacesBySegment = runDictionary["pacesBySegment"] as? [Int] ?? []
                     
                     let user = User()
                     user.id = userID
