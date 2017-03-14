@@ -29,4 +29,5 @@ struct Run {
     var locations: [CLLocation]?    //each item = timestamp : [latitude, longitude]
     var imageURL: String?
     var user: User?
+    var paceZones: [String:Int]
 }

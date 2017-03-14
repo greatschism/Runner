@@ -23,7 +23,7 @@ class RunDetailsCell01: UICollectionViewCell, ChartViewDelegate {
     let graphTitle: UILabel = {
        
         let label = UILabel()
-        label.text = "Pace by Split Analysis"
+        label.text = "Pace by Split Analysis [min/km]"
         label.textColor = .black
         label.textAlignment = .center
         label.font = UIFont(name: "AvenirNext-Regular", size: 16)
@@ -108,9 +108,11 @@ class RunDetailsCell01: UICollectionViewCell, ChartViewDelegate {
         view.rightAxis.drawAxisLineEnabled = false
         
         // hide labels on axis
-        view.xAxis.drawLabelsEnabled = false
         view.leftAxis.drawLabelsEnabled = false
         view.rightAxis.drawLabelsEnabled = false
+        
+        view.xAxis.labelPosition = .bottom
+        view.xAxis.labelTextColor = self.valueTextColor
         
         // set left axis minimun value to Zero (to be static)
         view.leftAxis.axisMinimum = 0
@@ -204,7 +206,11 @@ class RunDetailsCell01: UICollectionViewCell, ChartViewDelegate {
         var fastestSplit = run.pacesBySegment[0]
         var slowestSplit = run.pacesBySegment[0]
         
+        var splitLabels = [String]()
+        
         for i in 0..<run.pacesBySegment.count {
+            
+            splitLabels.append("km \(i + 1)")
             
             let dataEntry = BarChartDataEntry(x: Double(i), y: Double(run.pacesBySegment[i]))
             dataEntries.append(dataEntry)
@@ -228,6 +234,9 @@ class RunDetailsCell01: UICollectionViewCell, ChartViewDelegate {
         
         let valueFormatter = ChartValueFormatter()
         chartData.setValueFormatter(valueFormatter)
+        
+        paceGraphView.xAxis.valueFormatter = IndexAxisValueFormatter(values:splitLabels)
+        paceGraphView.xAxis.granularity = 1
         
         // Setup font for values. Show values only if ran 10 km or less (to avoid clashing value strings)
         if run.pacesBySegment.count <= 10 {

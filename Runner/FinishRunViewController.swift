@@ -291,7 +291,7 @@ class FinishRunViewController: UIViewController, MKMapViewDelegate, UITextFieldD
             runName = nameTextField.text!
         }
         
-        values = ["name":runName, "totalRunDistance":newRun.totalRunDistance, "duration":newRun.duration, "pace": newRun.pace, "pacesBySegment":newRun.pacesBySegment, "userID":uid, "timestamp": timestamp, "elevations":newRun.elevations, "calories":newRun.calories, "imageURL": imageURL]
+        values = ["name":runName, "totalRunDistance":newRun.totalRunDistance, "duration":newRun.duration, "pace": newRun.pace, "pacesBySegment":newRun.pacesBySegment, "userID":uid, "timestamp": timestamp, "elevations":newRun.elevations, "calories":newRun.calories, "imageURL": imageURL, "paceZones":newRun.paceZones]
         
         childRef.updateChildValues(values) { (error, ref) in
             

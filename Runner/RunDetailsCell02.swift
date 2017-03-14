@@ -23,7 +23,7 @@ class RunDetailsCell02: UICollectionViewCell, ChartViewDelegate {
     let graphTitle: UILabel = {
         
         let label = UILabel()
-        label.text = "Altitude by Distance (km)"
+        label.text = "Altitude [m]"
         label.textColor = .black
         label.textAlignment = .center
         label.font = UIFont(name: "AvenirNext-Regular", size: 16)

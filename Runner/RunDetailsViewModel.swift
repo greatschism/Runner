@@ -93,6 +93,9 @@ class RunDetailsViewModel: NSObject, UICollectionViewDelegate, UICollectionViewD
         else {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.cellIDs[3], for: indexPath) as! RunDetailsCell03
+            if let run = self.run {
+                cell.configure(with: run)
+            }
             return cell
         }
     }
@@ -113,7 +116,7 @@ class RunDetailsViewModel: NSObject, UICollectionViewDelegate, UICollectionViewD
         
         if page == 1 {
             
-            let cell = collectionView?.cellForItem(at: IndexPath(item: page, section: 0)) as! RunDetailsCell01
+            guard let cell = collectionView?.cellForItem(at: IndexPath(item: page, section: 0)) as? RunDetailsCell01 else { return }
             cell.paceGraphView.isHidden = false
 
             if !cell.isAlreadyShown {
@@ -123,11 +126,21 @@ class RunDetailsViewModel: NSObject, UICollectionViewDelegate, UICollectionViewD
         }
         if page == 2 {
             
-            let cell = collectionView?.cellForItem(at: IndexPath(item: page, section: 0)) as! RunDetailsCell02
+            guard let cell = collectionView?.cellForItem(at: IndexPath(item: page, section: 0)) as? RunDetailsCell02 else { return }
             cell.altitudeGraphView.isHidden = false
 
             if !cell.isAlreadyShown {
                 cell.altitudeGraphView.animate(yAxisDuration: 0.5, easingOption: .easeInOutExpo)
+                cell.isAlreadyShown = true
+            }
+        }
+        if page == 3 {
+            
+            guard let cell = collectionView?.cellForItem(at: IndexPath(item: page, section: 0)) as? RunDetailsCell03 else { return }
+            cell.paceZonesGraphView.isHidden = false
+            
+            if !cell.isAlreadyShown {
+                cell.paceZonesGraphView.animate(yAxisDuration: 0.5, easingOption: .easeInOutExpo)
                 cell.isAlreadyShown = true
             }
         }

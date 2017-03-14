@@ -15,7 +15,7 @@ import MapKit
 class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProtocol {
     
     var newRun: Run = {
-        var run = Run(id: nil, name: nil, timestamp: nil, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], elevations: [], calories: 0, locations: nil, imageURL: nil, user: nil)
+        var run = Run(id: nil, name: nil, timestamp: nil, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], elevations: [], calories: 0, locations: nil, imageURL: nil, user: nil, paceZones: ["zoneUnder4" : 0, "zone45":0, "zone56":0, "zone67":0, "zone7plus":0])
         return run
     }()
     
@@ -37,6 +37,14 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
     
     // For building the altitude graph
     var last100m = 0
+    
+    // Properties for pace zone analysis
+    var currentPace = 0.0
+    var zoneUnder4 = 0                      //  pace between 0 - 3:59 min/km - faster
+    var zone45 = 0                          //  pace between 4 - 4:59 min/km
+    var zone56 = 0                          //  pace between 5 - 5:59 min/km
+    var zone67 = 0                          //  pace between 6 - 6:59 min/km
+    var zone7plus = 0                       //  pace between 7 min/km or more - slower
     
     var timer: Timer?
     lazy var locations = [CLLocation]()
@@ -329,11 +337,30 @@ class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProto
         
         statsContainer.distanceLabel.text = RawValueFormatter().getDistanceString(with: newRun.totalRunDistance)
         
-        // Process Pace in 'min/km'
+        // Process Total Average Pace in 'min/km'
         if newRun.totalRunDistance != 0 {
 
             let paceValue = (Double(newRun.duration) / Double(newRun.totalRunDistance)) * (1000.0 / 60.0)
             newRun.pace = Double(paceValue).roundTo(places: 2)
+        }
+        
+        // Process Pace Zone Analysis
+        switch currentPace {
+        case 0..<4.0:
+            zoneUnder4 = zoneUnder4 + 1
+            newRun.paceZones["zoneUnder4"] = zoneUnder4
+        case 4.0..<5.0:
+            zone45 = zone45 + 1
+            newRun.paceZones["zone45"] = zone45
+        case 5.0..<6.0:
+            zone56 = zone56 + 1
+            newRun.paceZones["zone56"] = zone56
+        case 6.0..<7.0:
+            zone67 = zone67 + 1
+            newRun.paceZones["zone67"] = zone67
+        default:
+            zone7plus = zone7plus + 1           // speed equal or greater than 7
+            newRun.paceZones["zone7plus"] = zone7plus
         }
         
         statsContainer.avgPaceLabel.text = RawValueFormatter().getPaceString(with: newRun.pace)
@@ -592,6 +619,9 @@ extension RunningViewController: CLLocationManagerDelegate, MKMapViewDelegate {
                     
                     //update distance
                     distance = distance + Int(location.distance(from: lastLocation))
+                    
+                    //update realtime speed
+                    currentPace = 1 / (60 * Double(location.speed) / 1000)
                     
                     // update map
                     var coordinates = [CLLocationCoordinate2D]()

@@ -25,11 +25,11 @@ class SyncManager {
             
             if let runDictionary = snapshot.value as? [String: Any] {
                 
-                var foundRun = Run(id: nil, name: nil, timestamp: 0, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], elevations: [], calories: 0, locations: nil, imageURL: nil, user: nil)
+                var foundRun = Run(id: nil, name: nil, timestamp: 0, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], elevations: [], calories: 0, locations: nil, imageURL: nil, user: nil, paceZones: ["zoneUnder4" : 0, "zone45":0, "zone56":0, "zone67":0, "zone7plus":0])
                 
                 if let runName = runDictionary["name"] as? String, let runDuration = runDictionary["duration"] as? Int,
                     let runDistance = runDictionary["totalRunDistance"] as? Int,
-                    let runPace = runDictionary["pace"] as? Double, let userID = runDictionary["userID"] as? String, let startingTime = runDictionary["timestamp"] as? Int, let imageURL = runDictionary["imageURL"] as? String, let calories = runDictionary["calories"] as? Int, let elevations = runDictionary["elevations"] as? [Int] {
+                let runPace = runDictionary["pace"] as? Double, let userID = runDictionary["userID"] as? String, let startingTime = runDictionary["timestamp"] as? Int, let imageURL = runDictionary["imageURL"] as? String, let calories = runDictionary["calories"] as? Int, let elevations = runDictionary["elevations"] as? [Int], let paceZones = runDictionary["paceZones"] as? [String: Int] {
                     
                     
                     let pacesBySegment = runDictionary["pacesBySegment"] as? [Int] ?? []
@@ -48,6 +48,7 @@ class SyncManager {
                     foundRun.pacesBySegment = pacesBySegment
                     foundRun.calories = calories
                     foundRun.elevations = elevations
+                    foundRun.paceZones = paceZones
                     
                     self.indexKeys.insert(snapshot.key, at: 0)
                     
