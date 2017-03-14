@@ -134,10 +134,10 @@ class RunDetailsViewController: UIViewController {
         
         let background = UIImage(named: "backgroundForSharing")
         
-        let valueFont = UIFont(name: "DINAlternate-bold", size: 20)
+        guard let valueFont = UIFont(name: "DINAlternate-bold", size: 20) else { return nil }
         let valueAttributes = [NSFontAttributeName: valueFont, NSForegroundColorAttributeName:UIColor.white]
 
-        let textFont = UIFont(name: "AvenirNext-Regular", size: 12)
+        guard let textFont = UIFont(name: "AvenirNext-Regular", size: 12) else { return nil }
         let textAttributes = [NSFontAttributeName: textFont, NSForegroundColorAttributeName:UIColor.white]
         
         let distanceValue = RawValueFormatter().getDistanceString(with: distance)
