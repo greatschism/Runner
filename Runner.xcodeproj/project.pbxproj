@@ -31,6 +31,8 @@
 		D07E7EE61E4F024A001E7A75 /* AfterRunFeeling.swift in Sources */ = {isa = PBXBuildFile; fileRef = D07E7EE51E4F024A001E7A75 /* AfterRunFeeling.swift */; };
 		D07E7EE81E512B0C001E7A75 /* CompleteRunStatsContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D07E7EE71E512B0C001E7A75 /* CompleteRunStatsContainerView.swift */; };
 		D07E7EEA1E51A46A001E7A75 /* InProgressRunStatsContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D07E7EE91E51A46A001E7A75 /* InProgressRunStatsContainerView.swift */; };
+		D08F2DC91E79167D00E1D7CE /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D08F2DC81E79167D00E1D7CE /* SettingsViewModel.swift */; };
+		D08F2DCB1E79194900E1D7CE /* SettingsCell00.swift in Sources */ = {isa = PBXBuildFile; fileRef = D08F2DCA1E79194900E1D7CE /* SettingsCell00.swift */; };
 		D090A5F31E601D7600F88047 /* SyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D090A5F21E601D7600F88047 /* SyncManager.swift */; };
 		D090A5F61E63EE0A00F88047 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D090A5F51E63EE0A00F88047 /* MapKit.framework */; };
 		D0AA725B1E4BDE9F00089C24 /* FinishRunViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0AA725A1E4BDE9F00089C24 /* FinishRunViewController.swift */; };
@@ -70,6 +72,8 @@
 		D07E7EE51E4F024A001E7A75 /* AfterRunFeeling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AfterRunFeeling.swift; path = Runner/AfterRunFeeling.swift; sourceTree = SOURCE_ROOT; };
 		D07E7EE71E512B0C001E7A75 /* CompleteRunStatsContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompleteRunStatsContainerView.swift; sourceTree = "<group>"; };
 		D07E7EE91E51A46A001E7A75 /* InProgressRunStatsContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InProgressRunStatsContainerView.swift; sourceTree = "<group>"; };
+		D08F2DC81E79167D00E1D7CE /* SettingsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsViewModel.swift; path = Runner/SettingsViewModel.swift; sourceTree = SOURCE_ROOT; };
+		D08F2DCA1E79194900E1D7CE /* SettingsCell00.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsCell00.swift; sourceTree = "<group>"; };
 		D090A5F21E601D7600F88047 /* SyncManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SyncManager.swift; path = Runner/SyncManager.swift; sourceTree = SOURCE_ROOT; };
 		D090A5F51E63EE0A00F88047 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		D0AA725A1E4BDE9F00089C24 /* FinishRunViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FinishRunViewController.swift; path = Runner/FinishRunViewController.swift; sourceTree = SOURCE_ROOT; };
@@ -175,6 +179,7 @@
 				D07E7EE71E512B0C001E7A75 /* CompleteRunStatsContainerView.swift */,
 				D02138811E5AE11C00BB57DC /* FeedCell.swift */,
 				D02A283A1E7206CF00594B02 /* RunDetailCells */,
+				D08F2DC71E7915F000E1D7CE /* SettingsCells */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -209,6 +214,7 @@
 			children = (
 				D047A35A1E57CB9400B731E5 /* FeedViewModel.swift */,
 				D02A28341E70A9DC00594B02 /* RunDetailsViewModel.swift */,
+				D08F2DC81E79167D00E1D7CE /* SettingsViewModel.swift */,
 			);
 			name = "View Models";
 			sourceTree = "<group>";
@@ -238,6 +244,14 @@
 				D06CC4771E53D67100BAEF17 /* Runner-Bridging-Header.h */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		D08F2DC71E7915F000E1D7CE /* SettingsCells */ = {
+			isa = PBXGroup;
+			children = (
+				D08F2DCA1E79194900E1D7CE /* SettingsCell00.swift */,
+			);
+			name = SettingsCells;
 			sourceTree = "<group>";
 		};
 		D090A5F11E601D2600F88047 /* Server */ = {
@@ -415,8 +429,10 @@
 				D0307DA71E6E1A260046C7B9 /* Extensions.swift in Sources */,
 				D07E7EE61E4F024A001E7A75 /* AfterRunFeeling.swift in Sources */,
 				D047A35B1E57CB9400B731E5 /* FeedViewModel.swift in Sources */,
+				D08F2DCB1E79194900E1D7CE /* SettingsCell00.swift in Sources */,
 				D02138821E5AE11C00BB57DC /* FeedCell.swift in Sources */,
 				D090A5F31E601D7600F88047 /* SyncManager.swift in Sources */,
+				D08F2DC91E79167D00E1D7CE /* SettingsViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

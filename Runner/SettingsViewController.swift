@@ -7,56 +7,58 @@
 //
 
 import UIKit
-import Firebase
+import ReactiveCocoa
 
-class SettingsViewController: UIViewController {
+class SettingsViewController: UITableViewController {
 
-    let logoutButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("LOGOUT", for: .normal)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitleColor(UIColor.white, for: .normal)
-        button.backgroundColor = UIColor.red
-        button.layer.cornerRadius = 8
-        button.layer.masksToBounds = true
-        
-        button.addTarget(self, action: #selector(logoutButtonPressed), for: .touchUpInside)
-        return button
+    var settingsViewModel: SettingsViewModel?
+    
+    lazy var navBarBottomPosition: CGFloat = {
+        var height = self.navigationController!.navigationBar.frame.size.height + UIApplication.shared.statusBarFrame.height
+        return height
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = UIColor.white
+        navigationItem.title = "Profile Settings"
         
-        setupLogoutButtonView()
-    }
+        if let settingsVM = settingsViewModel, let table = settingsViewModel?.tableView {
+            
+            // TableView delegate and datasource are handled in the view model.
+            self.tableView.delegate = settingsVM
+            self.tableView.dataSource = settingsVM
+            self.tableView = table
+        }
 
-    func setupLogoutButtonView() {
-        
-        view.addSubview(logoutButton)
-        
-        // x, y, width, height constraints
-        logoutButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        logoutButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20).isActive = true
-        logoutButton.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -60).isActive = true
-        logoutButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        addNavButtons()
 
+        bind()
     }
     
-    func logoutButtonPressed() {
+    func addNavButtons() {
         
-        do {
-            try FIRAuth.auth()?.signOut()
+        let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(dismissVC))
+        navigationItem.rightBarButtonItem = doneButton
+    }
+    
+    func dismissVC() {
+        
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    func bind() {
+
+        // Define logout command when the logout cell is touched. Push the login VC onto the nav stack.
+        settingsViewModel?.logoutCommand = RACCommand(signal: {[weak self](loginVC:Any!) -> RACSignal! in
             
-            let loginVC = LoginViewController()
-            present(loginVC, animated: true, completion: nil)
+            guard let sself = self else { return RACSignal.empty() }
+            
+            sself.present(loginVC as! LoginViewController, animated: true, completion: nil)
             
             print("[SETTINGS VIEW CONTROLLER] User successfuly logged out.")
-        }
-        catch let logoutError {
-            print(logoutError)
-        }
+
+            return RACSignal.empty()
+        })
     }
 }

@@ -77,6 +77,7 @@ class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegat
                 let user = User()
                 user.id = uid
                 user.name = dictionary["name"] as? String
+                user.email = dictionary["email"] as? String
                 
                 self.currentUser = user
                 

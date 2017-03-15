@@ -142,7 +142,12 @@ class FeedViewController: UICollectionViewController, CKCircleMenuDelegate {
             navigationController?.present(runningVC, animated: true, completion: nil)
             break
         case 1:
-            navigationController?.present(SettingsViewController(), animated: true, completion: nil)
+            let settingsVC = SettingsViewController()
+            let settingsViewModel = SettingsViewModel()
+            settingsViewModel.currentUser = feedViewModel?.currentUser
+            settingsVC.settingsViewModel = settingsViewModel
+            let settingsNavController = UINavigationController(rootViewController: settingsVC)
+            navigationController?.present(settingsNavController, animated: true, completion: nil)
             break
         case 2:
             navigationController?.present(RunningViewController(), animated: true, completion: nil)

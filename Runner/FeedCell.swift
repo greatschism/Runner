@@ -191,7 +191,7 @@ class FeedCell: UICollectionViewCell {
             
             ref.observeSingleEvent(of: .value, with: { (snapshot) in
                 
-                print(snapshot)
+//                print(snapshot)
                 
                 if let userDictionary = snapshot.value as? [String: Any] {
                     

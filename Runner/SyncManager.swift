@@ -21,7 +21,8 @@ class SyncManager {
         
         FIRDatabase.database().reference().child("runs").observe(.childAdded, with: { (snapshot) in
             
-            print("[SYNC MANAGER] about to get in \(#function) the item added on Database: \(snapshot)")
+//            print("[SYNC MANAGER] about to get in \(#function) the item added on Database: \(snapshot)")
+            print("[SYNC MANAGER] about to get in \(#function) an item added on Database")
             
             if let runDictionary = snapshot.value as? [String: Any] {
                 
