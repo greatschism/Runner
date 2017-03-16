@@ -168,9 +168,7 @@ class FinishRunViewController: UIViewController, MKMapViewDelegate, UITextFieldD
     func addNavButtons() {
         
         let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(resume))
-        backButton.tintColor = UIColor(r: 255, g: 55, b: 55)
         let saveButton = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveImageFirst))
-        saveButton.tintColor = UIColor(r: 255, g: 55, b: 55)
 
         navigationItem.leftBarButtonItem = backButton
         navigationItem.rightBarButtonItem = saveButton
