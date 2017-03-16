@@ -117,30 +117,48 @@ class RunDetailsViewModel: NSObject, UICollectionViewDelegate, UICollectionViewD
         if page == 1 {
             
             guard let cell = collectionView?.cellForItem(at: IndexPath(item: page, section: 0)) as? RunDetailsCell01 else { return }
-            cell.paceGraphView.isHidden = false
 
             if !cell.isAlreadyShown {
-                cell.paceGraphView.animate(yAxisDuration: 0.5, easingOption: .easeInOutExpo)
+                cell.paceGraphView.animate(yAxisDuration: 0.7, easingOption: .easeInOutExpo)
+                
+                let when = DispatchTime.now() + 0.1
+                DispatchQueue.main.asyncAfter(deadline: when) {
+                    
+                    cell.paceGraphView.isHidden = false
+                }
+                
                 cell.isAlreadyShown = true
             }
         }
         if page == 2 {
             
             guard let cell = collectionView?.cellForItem(at: IndexPath(item: page, section: 0)) as? RunDetailsCell02 else { return }
-            cell.altitudeGraphView.isHidden = false
 
             if !cell.isAlreadyShown {
-                cell.altitudeGraphView.animate(yAxisDuration: 0.5, easingOption: .easeInOutExpo)
+                cell.altitudeGraphView.animate(yAxisDuration: 0.7, easingOption: .easeInOutExpo)
+                
+                let when = DispatchTime.now() + 0.1
+                DispatchQueue.main.asyncAfter(deadline: when) {
+                    
+                    cell.altitudeGraphView.isHidden = false
+                }
+                
                 cell.isAlreadyShown = true
             }
         }
         if page == 3 {
             
             guard let cell = collectionView?.cellForItem(at: IndexPath(item: page, section: 0)) as? RunDetailsCell03 else { return }
-            cell.paceZonesGraphView.isHidden = false
             
             if !cell.isAlreadyShown {
-                cell.paceZonesGraphView.animate(yAxisDuration: 0.5, easingOption: .easeInOutExpo)
+                cell.paceZonesGraphView.animate(yAxisDuration: 0.7, easingOption: .easeInOutExpo)
+                
+                let when = DispatchTime.now() + 0.1
+                DispatchQueue.main.asyncAfter(deadline: when) {
+                    
+                    cell.paceZonesGraphView.isHidden = false
+                }
+                
                 cell.isAlreadyShown = true
             }
         }
