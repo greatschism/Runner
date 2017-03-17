@@ -248,10 +248,13 @@ class FinishRunViewController: UIViewController, MKMapViewDelegate, UITextFieldD
     
     func saveImageFirst() {
         
+        let ref = FIRDatabase.database().reference().child("runs")
+        let runRef = ref.childByAutoId()
+        
         if let image = self.mapview.renderToImage() {
             
             let imageName = UUID().uuidString
-            let ref = FIRStorage.storage().reference().child("run_images").child(imageName)
+            let ref = FIRStorage.storage().reference().child("run_images").child(runRef.key).child(imageName)
             if let data = UIImageJPEGRepresentation(image, 1.0) {
                 
                 ref.put(data, metadata: nil, completion: { (metadata, error) in
@@ -264,23 +267,23 @@ class FinishRunViewController: UIViewController, MKMapViewDelegate, UITextFieldD
                     
                     if let urlString = metadata?.downloadURL()?.absoluteString {
                         
-                        self.saveRun(with: urlString)
+                        self.saveRun(with: runRef, imageURL: urlString, imageName: imageName)
                     }
                 })
             }
         }
     }
     
-    private func saveRun(with imageURL: String) {
+    private func saveRun(with runRef: FIRDatabaseReference, imageURL: String, imageName: String) {
         
-        let ref = FIRDatabase.database().reference().child("runs")
-        let childRef = ref.childByAutoId()
-        let locationsRef = childRef.child("locations")
+        let locationsRef = runRef.child("locations")
+        let imagesRef = runRef.child("images")
         
         guard let user = newRun?.user, let uid = user.id else { return }
                 
         var values = [String:Any]()
         var locationValues = [String:Any]()
+        var imageValues = [String:Any]()
         
         guard let newRun = newRun, let timestamp = newRun.timestamp else { return }
         
@@ -289,9 +292,9 @@ class FinishRunViewController: UIViewController, MKMapViewDelegate, UITextFieldD
             runName = nameTextField.text!
         }
         
-        values = ["name":runName, "totalRunDistance":newRun.totalRunDistance, "duration":newRun.duration, "pace": newRun.pace, "pacesBySegment":newRun.pacesBySegment, "userID":uid, "timestamp": timestamp, "elevations":newRun.elevations, "calories":newRun.calories, "imageURL": imageURL, "paceZones":newRun.paceZones]
+        values = ["name":runName, "totalRunDistance":newRun.totalRunDistance, "duration":newRun.duration, "pace": newRun.pace, "pacesBySegment":newRun.pacesBySegment, "userID":uid, "timestamp": timestamp, "elevations":newRun.elevations, "calories":newRun.calories, "paceZones":newRun.paceZones]
         
-        childRef.updateChildValues(values) { (error, ref) in
+        runRef.updateChildValues(values) { (error, ref) in
             
             if error != nil {
                 
@@ -308,6 +311,11 @@ class FinishRunViewController: UIViewController, MKMapViewDelegate, UITextFieldD
                     eachLocationRef.updateChildValues(locationValues)
                 }
             }
+            
+            // save image
+            let imageRef = imagesRef.childByAutoId()
+            imageValues = ["imageName":imageName, "imageURL": imageURL]
+            imageRef.updateChildValues(imageValues)
             
             print("[FINISH VIEW CONTROLLER] saved new run to firebase.")
             

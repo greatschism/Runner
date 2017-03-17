@@ -17,7 +17,7 @@ class RunDetailsViewModel: NSObject, UICollectionViewDelegate, UICollectionViewD
     var collectionView: UICollectionView?
     var run: Run?
     
-    var selectCommand: RACCommand?
+    let syncManager = SyncManager.sharedInstance
     
     lazy var pageControl: UIPageControl = {
         let pc = UIPageControl()
@@ -54,6 +54,13 @@ class RunDetailsViewModel: NSObject, UICollectionViewDelegate, UICollectionViewD
         collectionView.showsHorizontalScrollIndicator = false
         
         return collectionView
+    }
+    
+    func deleteRun() {
+        
+        guard let run = self.run else { return }
+        syncManager.removeRunFromDataBase(with: run)
+        print("[RUN DETAILS VIEW MODEL] send message to sync manager to delete run from data base.")
     }
     
     //MARK: CollectionView Delegate and DataSource

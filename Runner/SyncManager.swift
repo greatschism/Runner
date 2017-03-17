@@ -26,7 +26,7 @@ class SyncManager {
             
             if let runDictionary = snapshot.value as? [String: Any] {
                 
-                var foundRun = Run(id: nil, name: nil, timestamp: 0, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], elevations: [], calories: 0, locations: nil, imageURL: nil, user: nil, paceZones: ["zoneUnder4" : 0, "zone45":0, "zone56":0, "zone67":0, "zone7plus":0])
+                var foundRun = Run(id: nil, name: nil, timestamp: 0, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], elevations: [], calories: 0, locations: nil, imageURL: nil, imageName: nil, user: nil, paceZones: ["zoneUnder4" : 0, "zone45":0, "zone56":0, "zone67":0, "zone7plus":0])
                 
                 let runName = runDictionary["name"] as? String ?? ""
                 let runDuration = runDictionary["duration"] as? Int ?? 0
@@ -34,12 +34,11 @@ class SyncManager {
                 let runPace = runDictionary["pace"] as? Double ?? 0.0
                 let userID = runDictionary["userID"] as? String ?? ""
                 let startingTime = runDictionary["timestamp"] as? Int ?? 0
-                let imageURL = runDictionary["imageURL"] as? String ?? ""
                 let calories = runDictionary["calories"] as? Int ?? 0
                 let elevations = runDictionary["elevations"] as? [Int] ?? []
                 let paceZones = runDictionary["paceZones"] as? [String: Int] ?? ["":0]
                 let pacesBySegment = runDictionary["pacesBySegment"] as? [Int] ?? []
-                    
+                
                 let user = User()
                 user.id = userID
                 
@@ -50,15 +49,27 @@ class SyncManager {
                 foundRun.totalRunDistance = runDistance
                 foundRun.pace = runPace
                 foundRun.timestamp = startingTime
-                foundRun.imageURL = imageURL
                 foundRun.pacesBySegment = pacesBySegment
                 foundRun.calories = calories
                 foundRun.elevations = elevations
                 foundRun.paceZones = paceZones
                 
-                self.indexKeys.insert(snapshot.key, at: 0)
+                FIRDatabase.database().reference().child("runs").child(snapshot.key).child("images").observe(.childAdded, with: { (snapshot) in
                 
-                completion(foundRun, nil)
+                    if let imageDictionary = snapshot.value as? [String: Any] {
+                    
+                        let imageURL = imageDictionary["imageURL"] as? String ?? ""
+                        let imageName = imageDictionary["imageName"] as? String ?? ""
+                        foundRun.imageURL = imageURL
+                        foundRun.imageName = imageName
+                        
+                        guard let runID = foundRun.id else { return }
+                        
+                        self.indexKeys.insert(runID, at: 0)
+                        
+                        completion(foundRun, nil)
+                    }
+                }, withCancel: nil)
             }
         }, withCancel: nil)
     }
@@ -96,14 +107,33 @@ class SyncManager {
                 
                 if error != nil {
                     
-                    print("[SYNC MANAGER] fail to delete message in \(#function), error: \(error)")
+                    print("[SYNC MANAGER] fail to delete run in \(#function), error: \(error)")
                 }
                 else {
                     
-                    print("[SYNC MANAGER] succeded to remove in \(#function) the item: \(run)")
+                    print("[SYNC MANAGER] succeded to remove run in \(#function) the item: \(run)")
+                    
+                    self.removeRunImagesFromStorage(with: run)
                 }
-                
             })
+        }
+    }
+    
+    func removeRunImagesFromStorage(with run: Run) {
+        
+        if let runID = run.id, let imageName = run.imageName {
+            
+            FIRStorage.storage().reference().child("run_images").child(runID).child(imageName).delete { error in
+                
+                if error != nil {
+
+                    print("[SYNC MANAGER] fail to delete run image in \(#function), error: \(error)")
+                }
+                else {
+
+                    print("[SYNC MANAGER] succeded to remove file in \(#function) the item: \(run)")
+                }
+            }
         }
     }
 }

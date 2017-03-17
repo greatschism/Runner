@@ -15,7 +15,7 @@ import MapKit
 class RunningViewController: UIViewController, CounterVCProtocol, FinishRunProtocol {
     
     var newRun: Run = {
-        var run = Run(id: nil, name: nil, timestamp: nil, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], elevations: [], calories: 0, locations: nil, imageURL: nil, user: nil, paceZones: ["zoneUnder4" : 0, "zone45":0, "zone56":0, "zone67":0, "zone7plus":0])
+        var run = Run(id: nil, name: nil, timestamp: nil, duration: 0, totalRunDistance: 0, totalDistanceInPause: 0, pace: 0.0, pacesBySegment: [], elevations: [], calories: 0, locations: nil, imageURL: nil, imageName: nil, user: nil, paceZones: ["zoneUnder4" : 0, "zone45":0, "zone56":0, "zone67":0, "zone7plus":0])
         return run
     }()
     

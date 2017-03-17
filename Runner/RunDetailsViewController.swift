@@ -51,11 +51,19 @@ class RunDetailsViewController: UIViewController {
             view.addSubview(collectionView)
         }
         
+        addNavButton()
+        
         setupShareButton()
         setupCollectionView()
         setupPageControlView()
     }
 
+    func addNavButton() {
+        
+        let deleteButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(deleteButtonPressed))
+        navigationItem.rightBarButtonItem = deleteButton
+    }
+    
     func setupShareButton() {
         
         view.addSubview(shareButton)
@@ -90,6 +98,15 @@ class RunDetailsViewController: UIViewController {
         runDetailsVM.pageControl.bottomAnchor.constraint(equalTo: shareButton.topAnchor, constant: -30).isActive = true
         runDetailsVM.pageControl.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         runDetailsVM.pageControl.heightAnchor.constraint(equalToConstant: 30).isActive = true
+    }
+    
+    func deleteButtonPressed() {
+        
+        print("[RUN DETAILS VIEW CONTROLLER] delete button pressed.")
+        
+        guard let navController = self.navigationController else { return }
+        navController.popToRootViewController(animated: true)
+        runDetailsViewModel?.deleteRun()
     }
     
     func shareButtonPressed() {

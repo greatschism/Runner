@@ -28,6 +28,7 @@ struct Run {
     var calories: Int
     var locations: [CLLocation]?    //each item = timestamp : [latitude, longitude]
     var imageURL: String?
+    var imageName: String?
     var user: User?
     var paceZones: [String:Int]
 }

@@ -157,8 +157,4 @@ class FeedViewModel: NSObject, UICollectionViewDelegate, UICollectionViewDelegat
         let childVC: UIViewController? = getChildVC(for: indexPath)
         selectCommand?.execute(childVC)
     }
-    
-    // To delete a run item
-    
-    // syncManager.removeRunFromDataBase(with: runToDelete)
 }
